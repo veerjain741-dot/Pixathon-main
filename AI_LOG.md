@@ -5,7 +5,7 @@ Date: 23 October 2026
 
 ##Tools used:
 
-chat gpt, antigravity, 
+chat gpt, antigravity, stitch (for UI), pixellab 
 
 ##key prompts:
 
@@ -48,3 +48,13 @@ so i think main issue is the ghosts not working at all, i can just see them but 
 
 3rd prompt:
 
+The game feels a bit small to look at, so maybe increase the size of the pixels a bit or reduce the grid by few amounts. Make the speed such that a human has enough time to react to the left right changes while navigating the map. but also it should be same for the 3 difficulty levels. Introduce a cool game sound throughout and different sounds for getting eaten, game over and restart while clicking the various buttons. Make the overall website with the title bar looking human-like and not the simple generic AI looking websites that exist. It should look cool but not the same like everyone else. Add sounds, change the colours of the ghosts for 3 difficulty levels, and the map can be easier to win for the 1st level, fairly easy to win with 2 lives gone at max, hard level needs perfect movement and the 2 ghosts predicting his future moves.
+
+Firstly lets change the animation , UI of the website. Go to google stich and make a modern looking pacman with the old characters being the same but the UI should feel like a modern game, with the whole thing looking attractive and getting attention-span. ask it to create 3 different colour schemes for the 3 maps and the whole colours should match in every level with the whole outlook being simplistic but good.
+
+Okay so lets not complicate the 2 ghosts a lot. We should introduce 3 difficulty levels: Easy, Medium and Hard. in the easy level there will be 2 ghosts and both will chase him ONLY, not predicting his moves. and the speed should be slow and easy to win for us. in the medium level, increase the difficulty and add the prediction of his moves. the current game is HARD according to me so make the speeds easier. thats it and lets make sure the mechanics of the game work well enough.
+
+Final summary: add 3 difficulty levels, and the map should change every 10 seconds should bring different colours so it feels like its a new map and add sounds and change the overall website UI. make the pellets less in easy, a bit more in medium and the max pellets in hard mode.
+
+
+future prompts:
