@@ -3,24 +3,67 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Maze Shift - Arcade Edition</title>
+  <title>MAZE // SHIFT - Modern Arcade</title>
   <style>
+    /* --- Dynamic Arcade Theme Variables --- */
     :root {
-      --bg-main: #060810;
-      --bg-panel: rgba(13, 17, 30, 0.88);
-      --border-panel: #1e2947;
-      --text-main: #e2e8f0;
-      --text-muted: #8493b2;
-      --accent-cyan: #00e5ff;
-      --accent-blue: #0066ff;
-      --accent-gold: #ffd700;
-      --accent-warn: #ff9900;
-      --accent-danger: #ff2a55;
-      --accent-green: #00ff88;
-      --wall-stroke: #0051ff;
-      --wall-glow: #00a2ff;
-      --gate-color: #ffaa00;
-      --font-arcade: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+      --bg-dark: #04060d;
+      --bg-surface: rgba(11, 15, 28, 0.88);
+      --bg-surface-border: rgba(255, 255, 255, 0.09);
+      --text-main: #f1f5f9;
+      --text-sub: #94a3b8;
+      --text-accent: #00e5ff;
+
+      /* Active Layout Colors (Morphs every 10 seconds) */
+      --theme-bg: #03050e;
+      --theme-wall-base: #071128;
+      --theme-wall-stroke: #0066ff;
+      --theme-wall-glow: #00e5ff;
+      --theme-accent: #00e5ff;
+      --theme-pellet: #ffd700;
+      --theme-power: #00ffff;
+      --theme-gate: #00ffff;
+
+      --arcade-gold: #fbbf24;
+      --arcade-danger: #ef4444;
+      --arcade-emerald: #10b981;
+      --font-ui: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    /* Layout Theme 1: Cobalt Highways */
+    body.theme-layout-1 {
+      --theme-bg: #03050e;
+      --theme-wall-base: #071128;
+      --theme-wall-stroke: #0066ff;
+      --theme-wall-glow: #00e5ff;
+      --theme-accent: #00e5ff;
+      --theme-pellet: #ffd700;
+      --theme-power: #00ffff;
+      --theme-gate: #00ffff;
+    }
+
+    /* Layout Theme 2: Emerald Serpent */
+    body.theme-layout-2 {
+      --theme-bg: #020c09;
+      --theme-wall-base: #052119;
+      --theme-wall-stroke: #059669;
+      --theme-wall-glow: #10b981;
+      --theme-accent: #10b981;
+      --theme-pellet: #facc15;
+      --theme-power: #34d399;
+      --theme-gate: #34d399;
+    }
+
+    /* Layout Theme 3: Sunset Citadel */
+    body.theme-layout-3 {
+      --theme-bg: #0f0314;
+      --theme-wall-base: #28062f;
+      --theme-wall-stroke: #c026d3;
+      --theme-wall-glow: #f43f5e;
+      --theme-accent: #f43f5e;
+      --theme-pellet: #fb923c;
+      --theme-power: #f43f5e;
+      --theme-gate: #fb7185;
     }
 
     * {
@@ -31,230 +74,360 @@
     }
 
     body {
-      background-color: var(--bg-main);
+      background-color: var(--bg-dark);
       color: var(--text-main);
-      font-family: var(--font-arcade);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
+      font-family: var(--font-ui);
+      height: 100vh;
+      width: 100vw;
       overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      transition: background-color 0.5s ease;
       background-image: 
-        radial-gradient(circle at 50% 50%, rgba(0, 85, 255, 0.08) 0%, transparent 70%),
-        radial-gradient(circle at 10% 20%, rgba(0, 229, 255, 0.04) 0%, transparent 50%),
-        radial-gradient(circle at 90% 80%, rgba(255, 42, 85, 0.04) 0%, transparent 50%);
+        radial-gradient(circle at 50% 30%, rgba(0, 229, 255, 0.05) 0%, transparent 60%),
+        radial-gradient(circle at 10% 90%, rgba(244, 63, 94, 0.04) 0%, transparent 40%);
     }
 
-    /* Main Container */
-    #game-container {
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      max-height: 98vh;
-      max-width: 96vw;
-    }
-
-    /* HUD Header */
-    #hud {
+    /* --- Compact Single-Line Top Bar (Never wraps, fits in 1 neat line) --- */
+    #top-bar {
       width: 100%;
-      background: var(--bg-panel);
-      backdrop-filter: blur(10px);
-      border: 1px solid var(--border-panel);
-      border-radius: 12px;
-      padding: 10px 16px;
-      margin-bottom: 8px;
-      display: grid;
-      grid-template-columns: auto 1fr auto;
-      gap: 14px;
-      align-items: center;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 16px rgba(0, 102, 255, 0.1);
-    }
-
-    .brand-group {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .game-title {
-      font-size: 1.15rem;
-      font-weight: 900;
-      letter-spacing: 2px;
-      color: #fff;
-      text-transform: uppercase;
-      text-shadow: 0 0 12px var(--accent-cyan);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .game-title span {
-      color: var(--accent-cyan);
-    }
-
-    .stats-group {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-
-    .stat-badge {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 4px 10px;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 8px;
-      min-width: 72px;
-    }
-
-    .stat-label {
-      font-size: 0.65rem;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: var(--text-muted);
-      font-weight: 700;
-    }
-
-    .stat-value {
-      font-size: 1.05rem;
-      font-weight: 800;
-      color: #fff;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .score-val { color: var(--accent-gold); text-shadow: 0 0 8px rgba(255, 215, 0, 0.4); }
-    .pellet-val { color: var(--accent-cyan); }
-    .lives-val { color: var(--accent-danger); font-size: 0.95rem; }
-
-    /* Shift Indicator Bar & Counter */
-    .shift-panel {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      min-width: 140px;
-    }
-
-    .shift-header {
+      height: 48px;
+      background: var(--bg-surface);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--bg-surface-border);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      width: 100%;
-      font-size: 0.72rem;
-      font-weight: 700;
+      padding: 0 16px;
+      gap: 12px;
+      flex-shrink: 0;
+      z-index: 10;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
     }
 
-    .shift-title {
-      color: var(--text-muted);
-      letter-spacing: 0.5px;
-    }
-
-    .shift-timer-text {
-      color: var(--accent-cyan);
-      font-variant-numeric: tabular-nums;
-      font-weight: 800;
-    }
-
-    .shift-timer-text.warning {
-      color: var(--accent-danger);
-      animation: pulse-danger 0.4s infinite alternate;
-    }
-
-    @keyframes pulse-danger {
-      from { transform: scale(1); text-shadow: 0 0 4px var(--accent-danger); }
-      to { transform: scale(1.1); text-shadow: 0 0 14px var(--accent-danger); }
-    }
-
-    .shift-bar-track {
-      width: 100%;
-      height: 6px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 4px;
-      overflow: hidden;
-      position: relative;
-    }
-
-    .shift-bar-fill {
-      height: 100%;
-      width: 100%;
-      background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan));
-      border-radius: 4px;
-      transition: width 0.08s linear, background-color 0.2s ease;
-      box-shadow: 0 0 8px var(--accent-cyan);
-    }
-
-    .shift-bar-fill.warning {
-      background: linear-gradient(90deg, var(--accent-warn), var(--accent-danger));
-      box-shadow: 0 0 10px var(--accent-danger);
-    }
-
-    .layout-badge {
-      font-size: 0.65rem;
-      padding: 2px 8px;
-      border-radius: 12px;
-      background: rgba(0, 229, 255, 0.12);
-      border: 1px solid rgba(0, 229, 255, 0.3);
-      color: var(--accent-cyan);
-      font-weight: 700;
-      white-space: nowrap;
-    }
-
-    /* Actions / Buttons */
-    .controls-group {
+    .brand-cluster {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 10px;
+      flex-shrink: 0;
     }
 
-    .hud-btn {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      color: var(--text-main);
-      padding: 6px 10px;
-      border-radius: 8px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.15s ease;
+    .brand-title {
+      font-size: 1.05rem;
+      font-weight: 900;
+      letter-spacing: 2px;
+      color: #fff;
       display: inline-flex;
       align-items: center;
       gap: 5px;
+      white-space: nowrap;
     }
 
-    .hud-btn:hover {
-      background: rgba(0, 229, 255, 0.15);
-      border-color: var(--accent-cyan);
+    .brand-title span.slash {
+      color: var(--theme-accent);
+      transition: color 0.4s ease;
+      text-shadow: 0 0 10px var(--theme-accent);
+    }
+
+    /* Compact Difficulty Switcher */
+    .diff-capsules {
+      display: flex;
+      background: rgba(0, 0, 0, 0.45);
+      padding: 2px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      gap: 2px;
+      flex-shrink: 0;
+    }
+
+    .diff-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-sub);
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .diff-btn:hover { color: #fff; }
+    .diff-btn.active {
+      background: var(--theme-accent);
+      color: #04060d;
+      box-shadow: 0 0 10px var(--theme-accent);
+    }
+
+    /* Shift Gauge Compact */
+    .shift-inline-gauge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      padding: 4px 10px;
+      border-radius: 8px;
+      flex-shrink: 0;
+    }
+
+    .shift-inline-label {
+      font-size: 0.65rem;
+      font-weight: 800;
+      color: var(--text-sub);
+      white-space: nowrap;
+    }
+
+    .shift-inline-time {
+      font-size: 0.85rem;
+      font-weight: 900;
+      color: var(--theme-accent);
+      font-variant-numeric: tabular-nums;
+      min-width: 36px;
+      text-align: right;
+    }
+
+    .shift-inline-time.warning {
+      color: var(--arcade-danger);
+      animation: pulse-warn 0.4s infinite alternate;
+    }
+
+    @keyframes pulse-warn {
+      from { transform: scale(1); }
+      to { transform: scale(1.1); text-shadow: 0 0 10px var(--arcade-danger); }
+    }
+
+    .shift-mini-track {
+      width: 55px;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .shift-mini-fill {
+      height: 100%;
+      width: 100%;
+      background: var(--theme-accent);
+      transition: width 0.08s linear, background 0.4s ease;
+      box-shadow: 0 0 6px var(--theme-accent);
+    }
+
+    .shift-mini-fill.warning {
+      background: var(--arcade-danger);
+      box-shadow: 0 0 8px var(--arcade-danger);
+    }
+
+    /* Stats Line */
+    .stats-inline {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .stat-crumb {
+      display: flex;
+      align-items: baseline;
+      gap: 5px;
+      font-size: 0.72rem;
+      white-space: nowrap;
+    }
+
+    .stat-crumb-label {
+      color: var(--text-sub);
+      font-weight: 700;
+    }
+
+    .stat-crumb-val {
+      font-weight: 900;
       color: #fff;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .stat-score { color: var(--arcade-gold); text-shadow: 0 0 6px rgba(251, 191, 36, 0.4); }
+    .stat-pellet { color: var(--theme-accent); }
+    .stat-lives { color: var(--arcade-danger); font-size: 0.8rem; }
+
+    /* Controls Group */
+    .actions-inline {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    .top-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-main);
+      width: 30px;
+      height: 30px;
+      border-radius: 7px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .top-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: var(--theme-accent);
       transform: translateY(-1px);
     }
 
-    .hud-btn.active {
-      background: rgba(0, 229, 255, 0.25);
-      border-color: var(--accent-cyan);
-      color: var(--accent-cyan);
+    .top-btn.active {
+      border-color: var(--theme-accent);
+      background: rgba(0, 229, 255, 0.15);
+      color: var(--theme-accent);
     }
 
-    /* Canvas Area */
-    #canvas-wrapper {
-      position: relative;
-      border: 2px solid var(--border-panel);
-      border-radius: 14px;
+    /* --- Workspace Stage: Left Intel + Center Canvas + Right Intel --- */
+    #workspace-stage {
+      flex: 1;
+      width: 100%;
+      max-width: 1360px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 16px;
+      gap: 16px;
       overflow: hidden;
-      background: #020308;
-      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.7), 0 0 24px rgba(0, 102, 255, 0.15);
+    }
+
+    /* Sidebar Cards */
+    .side-intel-card {
+      width: 230px;
+      max-height: calc(100vh - 72px);
+      background: var(--bg-surface);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--bg-card-border);
+      border-radius: 14px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      flex-shrink: 0;
+      overflow-y: auto;
+    }
+
+    @media (max-width: 1040px) {
+      .side-intel-card { display: none; }
+    }
+
+    .intel-section {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .intel-header {
+      font-size: 0.72rem;
+      font-weight: 900;
+      letter-spacing: 1px;
+      color: var(--theme-accent);
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .intel-row {
+      font-size: 0.74rem;
+      color: #cbd5e1;
+      line-height: 1.4;
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+    }
+
+    .intel-bullet {
+      color: var(--theme-accent);
+      font-size: 0.8rem;
+      line-height: 1.2;
+    }
+
+    .key-tag {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+      padding: 1px 5px;
+      font-size: 0.65rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .badge-status {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 0.68rem;
+      font-weight: 800;
+      background: rgba(0, 229, 255, 0.12);
+      color: var(--theme-accent);
+      border: 1px solid var(--theme-accent);
+      margin-top: 2px;
+    }
+
+    /* --- Center Game Board --- */
+    #center-stage {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+    }
+
+    #canvas-container {
+      position: relative;
+      border: 2px solid var(--theme-wall-stroke);
+      border-radius: 16px;
+      overflow: hidden;
+      background: var(--theme-bg);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8), 0 0 24px rgba(0, 0, 0, 0.4);
+      transition: border-color 0.4s ease, background-color 0.4s ease;
     }
 
     #gameCanvas {
       display: block;
     }
 
-    /* Modals & Overlays */
+    /* Floating Toast */
+    #shift-toast {
+      position: absolute;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-30px);
+      background: rgba(10, 15, 28, 0.95);
+      border: 1px solid var(--theme-accent);
+      border-radius: 20px;
+      padding: 5px 18px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      color: var(--theme-accent);
+      box-shadow: 0 0 16px rgba(0, 229, 255, 0.35);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+      z-index: 15;
+      white-space: nowrap;
+    }
+
+    #shift-toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    /* --- Overlays & Modals --- */
     .modal-overlay {
       position: absolute;
       inset: 0;
@@ -264,8 +437,8 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 24px;
-      z-index: 20;
+      padding: 20px;
+      z-index: 30;
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.25s ease;
@@ -277,86 +450,66 @@
       pointer-events: auto;
     }
 
-    .modal-box {
-      background: linear-gradient(145deg, rgba(17, 24, 43, 0.95), rgba(9, 13, 26, 0.98));
-      border: 1px solid rgba(0, 229, 255, 0.35);
-      border-radius: 16px;
-      padding: 28px 36px;
-      max-width: 480px;
+    .modal-card {
+      background: linear-gradient(145deg, rgba(16, 22, 40, 0.96), rgba(8, 12, 22, 0.98));
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 18px;
+      padding: 24px 30px;
+      max-width: 440px;
       width: 90%;
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8), 0 0 28px rgba(0, 229, 255, 0.2);
-      animation: modal-pop 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9), 0 0 24px rgba(0, 102, 255, 0.2);
+      animation: pop-card 0.25s cubic-bezier(0.18, 0.89, 0.32, 1.28);
     }
 
-    @keyframes modal-pop {
+    @keyframes pop-card {
       from { transform: scale(0.92); opacity: 0; }
       to { transform: scale(1); opacity: 1; }
     }
 
     .modal-title {
-      font-size: 1.8rem;
+      font-size: 1.65rem;
       font-weight: 900;
       letter-spacing: 2px;
-      margin-bottom: 12px;
+      margin-bottom: 6px;
       text-transform: uppercase;
     }
 
-    .title-start {
-      color: #fff;
-      text-shadow: 0 0 16px var(--accent-cyan);
-    }
-
-    .title-win {
-      color: var(--accent-green);
-      text-shadow: 0 0 18px rgba(0, 255, 136, 0.6);
-    }
-
-    .title-loss {
-      color: var(--accent-danger);
-      text-shadow: 0 0 18px rgba(255, 42, 85, 0.6);
-    }
+    .modal-title.start { color: #fff; text-shadow: 0 0 14px var(--theme-accent); }
+    .modal-title.win { color: var(--arcade-emerald); text-shadow: 0 0 18px rgba(16, 185, 129, 0.6); }
+    .modal-title.gameover { color: var(--arcade-danger); text-shadow: 0 0 18px rgba(239, 68, 68, 0.6); }
 
     .modal-subtitle {
-      color: var(--text-muted);
-      font-size: 0.9rem;
-      margin-bottom: 20px;
+      color: var(--text-sub);
+      font-size: 0.84rem;
+      margin-bottom: 18px;
       line-height: 1.45;
     }
 
-    .instruction-card {
-      background: rgba(0, 0, 0, 0.4);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 10px;
-      padding: 14px;
-      margin-bottom: 22px;
-      text-align: left;
-      font-size: 0.82rem;
-      color: #cbd5e1;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
+    .modal-diff-select {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 6px;
+      margin-bottom: 16px;
     }
 
-    .instruction-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .key-caps {
-      display: inline-flex;
-      gap: 4px;
-    }
-
-    .key-cap {
-      background: rgba(255, 255, 255, 0.12);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 4px;
-      padding: 2px 6px;
+    .modal-diff-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 8px 4px;
+      color: var(--text-sub);
+      font-weight: 800;
       font-size: 0.72rem;
-      font-weight: 700;
-      color: #fff;
-      box-shadow: 0 2px 0 rgba(0, 0, 0, 0.5);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .modal-diff-btn:hover { color: #fff; }
+    .modal-diff-btn.active {
+      background: rgba(0, 229, 255, 0.15);
+      border-color: var(--theme-accent);
+      color: var(--theme-accent);
+      box-shadow: 0 0 12px rgba(0, 229, 255, 0.25);
     }
 
     .primary-btn {
@@ -364,8 +517,8 @@
       color: #fff;
       border: none;
       border-radius: 10px;
-      padding: 12px 28px;
-      font-size: 1rem;
+      padding: 10px 28px;
+      font-size: 0.95rem;
       font-weight: 800;
       letter-spacing: 1px;
       text-transform: uppercase;
@@ -376,251 +529,287 @@
 
     .primary-btn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 26px rgba(0, 229, 255, 0.6);
+      box-shadow: 0 8px 24px rgba(0, 229, 255, 0.6);
       filter: brightness(1.1);
     }
 
-    .stats-summary {
+    .stats-scoreboard {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 22px;
+      gap: 10px;
+      margin-bottom: 18px;
     }
 
-    .summary-card {
+    .score-cell {
       background: rgba(255, 255, 255, 0.04);
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 8px;
-      padding: 10px;
+      padding: 8px;
     }
 
-    .summary-label {
-      font-size: 0.7rem;
-      color: var(--text-muted);
+    .score-cell-label {
+      font-size: 0.65rem;
+      color: var(--text-sub);
       text-transform: uppercase;
     }
 
-    .summary-val {
-      font-size: 1.3rem;
-      font-weight: 800;
+    .score-cell-val {
+      font-size: 1.25rem;
+      font-weight: 900;
       color: #fff;
     }
-
-    /* Shift Banner Announcement */
-    #shift-announcement {
-      position: absolute;
-      top: 14px;
-      left: 50%;
-      transform: translateX(-50%) translateY(-20px);
-      background: rgba(13, 20, 38, 0.92);
-      border: 1px solid var(--accent-cyan);
-      border-radius: 20px;
-      padding: 6px 18px;
-      font-size: 0.8rem;
-      font-weight: 800;
-      letter-spacing: 1px;
-      color: var(--accent-cyan);
-      box-shadow: 0 0 16px rgba(0, 229, 255, 0.4);
-      opacity: 0;
-      pointer-events: none;
-      transition: all 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
-      z-index: 10;
-      white-space: nowrap;
-    }
-
-    #shift-announcement.show {
-      transform: translateX(-50%) translateY(0);
-      opacity: 1;
-    }
-
-    /* Floating Status Notification */
-    #game-status-pill {
-      font-size: 0.75rem;
-      font-weight: 800;
-      padding: 3px 10px;
-      border-radius: 6px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    .status-playing { background: rgba(0, 255, 136, 0.15); color: var(--accent-green); border: 1px solid rgba(0, 255, 136, 0.3); }
-    .status-warning { background: rgba(255, 153, 0, 0.15); color: var(--accent-warn); border: 1px solid rgba(255, 153, 0, 0.3); }
-    .status-shifting { background: rgba(0, 229, 255, 0.2); color: var(--accent-cyan); border: 1px solid rgba(0, 229, 255, 0.4); }
-    .status-paused { background: rgba(255, 255, 255, 0.1); color: var(--text-muted); border: 1px solid rgba(255, 255, 255, 0.2); }
   </style>
 </head>
-<body>
+<body class="theme-layout-1">
 
-  <div id="game-container">
-    <!-- Top HUD Navigation -->
-    <div id="hud">
-      <div class="brand-group">
-        <div class="game-title">MAZE <span>SHIFT</span></div>
-        <div id="layout-title-badge" class="layout-badge">LAYOUT 1: THE HIGHWAYS</div>
+  <!-- Compact 1-Line Top Header -->
+  <header id="top-bar">
+    <div class="brand-cluster">
+      <div class="brand-title">
+        <span>MAZE</span>
+        <span class="slash">//</span>
+        <span>SHIFT</span>
       </div>
 
-      <div class="stats-group">
-        <div class="stat-badge">
-          <span class="stat-label">SCORE</span>
-          <span id="score-display" class="stat-value score-val">0</span>
-        </div>
-
-        <div class="stat-badge">
-          <span class="stat-label">HIGH</span>
-          <span id="high-score-display" class="stat-value">0</span>
-        </div>
-
-        <div class="stat-badge">
-          <span class="stat-label">PELLETS</span>
-          <span id="pellets-display" class="stat-value pellet-val">0</span>
-        </div>
-
-        <!-- Shift Timer Gauge -->
-        <div class="shift-panel">
-          <div class="shift-header">
-            <span class="shift-title">MAZE SHIFT</span>
-            <span id="shift-timer-display" class="shift-timer-text">10.0s</span>
-          </div>
-          <div class="shift-bar-track">
-            <div id="shift-bar-fill" class="shift-bar-fill"></div>
-          </div>
-        </div>
-
-        <div class="stat-badge">
-          <span class="stat-label">LIVES</span>
-          <span id="lives-display" class="stat-value lives-val">🟡🟡🟡</span>
-        </div>
-
-        <div id="game-status-pill" class="status-playing">READY</div>
-      </div>
-
-      <div class="controls-group">
-        <button id="btn-sound" class="hud-btn" title="Toggle Sound [M]">
-          <span id="sound-icon">🔊</span>
-        </button>
-        <button id="btn-enemies" class="hud-btn active" title="Toggle Ghosts [E]">
-          <span>👻 ON</span>
-        </button>
-        <button id="btn-pause" class="hud-btn" title="Pause Game [P]">
-          <span>⏸️</span>
-        </button>
-        <button id="btn-restart" class="hud-btn" title="Restart Game [R]">
-          <span>🔄</span>
-        </button>
+      <!-- Difficulty Switcher Pills -->
+      <div class="diff-capsules">
+        <button id="pill-easy" class="diff-btn" data-level="EASY" title="Casual Speed, ~125 Pellets">EASY</button>
+        <button id="pill-medium" class="diff-btn active" data-level="MEDIUM" title="Medium Speed, Flanker AI, ~150 Pellets">MEDIUM</button>
+        <button id="pill-hard" class="diff-btn" data-level="HARD" title="Intense Speed, Predictive AI, 186 Pellets">HARD</button>
       </div>
     </div>
 
-    <!-- Canvas Game Board -->
-    <div id="canvas-wrapper">
-      <canvas id="gameCanvas" width="600" height="600"></canvas>
-      
-      <!-- In-Game Animated Announcement Banner -->
-      <div id="shift-announcement">⚠️ MAZE SHIFTING IN 3s...</div>
-
-      <!-- Start Screen Modal -->
-      <div id="modal-start" class="modal-overlay active">
-        <div class="modal-box">
-          <h1 class="modal-title title-start">MAZE SHIFT</h1>
-          <p class="modal-subtitle">
-            Pac-Man rules, but the labyrinth is alive. Every <strong>10 seconds</strong>, walls morph between 3 layouts!
-          </p>
-          <div class="instruction-card">
-            <div class="instruction-row">
-              <span class="key-caps">
-                <span class="key-cap">W</span>
-                <span class="key-cap">A</span>
-                <span class="key-cap">S</span>
-                <span class="key-cap">D</span>
-              </span>
-              <span>or</span>
-              <span class="key-caps">
-                <span class="key-cap">▲</span>
-                <span class="key-cap">◀</span>
-                <span class="key-cap">▼</span>
-                <span class="key-cap">▶</span>
-              </span>
-              <span>Navigate the maze corridors</span>
-            </div>
-            <div class="instruction-row">
-              <span style="font-size: 1.1rem;">🟡</span>
-              <span>Collect all pellets to clear the maze & win</span>
-            </div>
-            <div class="instruction-row">
-              <span style="font-size: 1.1rem;">🔵</span>
-              <span><strong>Power Pellets</strong> let you turn the tables & chomp ghosts!</span>
-            </div>
-            <div class="instruction-row">
-              <span style="font-size: 1.1rem;">⚡</span>
-              <span><strong>Shift Warning:</strong> Gates flash red before closing. Never get trapped!</span>
-            </div>
-          </div>
-          <button id="btn-start-game" class="primary-btn">PLAY GAME</button>
-        </div>
+    <!-- Inline Shift Countdown Gauge -->
+    <div class="shift-inline-gauge">
+      <span class="shift-inline-label">SHIFT</span>
+      <div class="shift-mini-track">
+        <div id="shift-bar-fill" class="shift-mini-fill"></div>
       </div>
-
-      <!-- Pause Screen Modal -->
-      <div id="modal-pause" class="modal-overlay">
-        <div class="modal-box">
-          <h2 class="modal-title title-start">GAME PAUSED</h2>
-          <p class="modal-subtitle">Take a breather. The maze is frozen in time.</p>
-          <button id="btn-resume-game" class="primary-btn">RESUME</button>
-        </div>
-      </div>
-
-      <!-- Victory Win Screen Modal -->
-      <div id="modal-win" class="modal-overlay">
-        <div class="modal-box">
-          <h2 class="modal-title title-win">VICTORY!</h2>
-          <p class="modal-subtitle">Superb navigation! You conquered the shifting labyrinth.</p>
-          <div class="stats-summary">
-            <div class="summary-card">
-              <div class="summary-label">Final Score</div>
-              <div id="win-score" class="summary-val">0</div>
-            </div>
-            <div class="summary-card">
-              <div class="summary-label">Shifts Survived</div>
-              <div id="win-shifts" class="summary-val">0</div>
-            </div>
-          </div>
-          <button id="btn-win-restart" class="primary-btn">PLAY AGAIN</button>
-        </div>
-      </div>
-
-      <!-- Game Over Modal -->
-      <div id="modal-gameover" class="modal-overlay">
-        <div class="modal-box">
-          <h2 class="modal-title title-loss">GAME OVER</h2>
-          <p id="gameover-reason" class="modal-subtitle">Caught by a phantom shifter.</p>
-          <div class="stats-summary">
-            <div class="summary-card">
-              <div class="summary-label">Score</div>
-              <div id="gameover-score" class="summary-val">0</div>
-            </div>
-            <div class="summary-card">
-              <div class="summary-label">Pellets Left</div>
-              <div id="gameover-pellets" class="summary-val">0</div>
-            </div>
-          </div>
-          <button id="btn-gameover-restart" class="primary-btn">TRY AGAIN</button>
-        </div>
-      </div>
-
+      <span id="shift-timer-display" class="shift-inline-time">10.0s</span>
     </div>
-  </div>
+
+    <!-- Compact Stats Row -->
+    <div class="stats-inline">
+      <div class="stat-crumb">
+        <span class="stat-crumb-label">SCORE</span>
+        <span id="score-display" class="stat-crumb-val stat-score">0</span>
+      </div>
+
+      <div class="stat-crumb">
+        <span class="stat-crumb-label">BEST 🏆</span>
+        <span id="high-score-display" class="stat-crumb-val">0</span>
+      </div>
+
+      <div class="stat-crumb">
+        <span class="stat-crumb-label">DOTS</span>
+        <span id="pellets-display" class="stat-crumb-val stat-pellet">0</span>
+      </div>
+
+      <div class="stat-crumb">
+        <span class="stat-crumb-label">LIVES</span>
+        <span id="lives-display" class="stat-crumb-val stat-lives">🟡🟡🟡</span>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="actions-inline">
+      <button id="btn-music" class="top-btn active" title="Toggle Synth Music [N]">🎵</button>
+      <button id="btn-sound" class="top-btn active" title="Toggle Sound SFX [M]">🔊</button>
+      <button id="btn-pause" class="top-btn" title="Pause Game [P / Space]">⏸️</button>
+      <button id="btn-restart" class="top-btn" title="Restart Game [R]">🔄</button>
+    </div>
+  </header>
+
+  <!-- Workspace: Left Intel + Center Canvas + Right Intel -->
+  <main id="workspace-stage">
+    
+    <!-- Left Sidebar: Controls & Shift Phases -->
+    <aside class="side-intel-card">
+      <div class="intel-section">
+        <div class="intel-header">🕹️ HOW TO PLAY</div>
+        <div class="intel-row">
+          <span class="intel-bullet">&bull;</span>
+          <span>Move: <span class="key-tag">W</span><span class="key-tag">A</span><span class="key-tag">S</span><span class="key-tag">D</span> or <span class="key-tag">Arrows</span></span>
+        </div>
+        <div class="intel-row">
+          <span class="intel-bullet">&bull;</span>
+          <span>Buffered turns: Press turn key early to glide through corners smoothly!</span>
+        </div>
+        <div class="intel-row">
+          <span class="intel-bullet">&bull;</span>
+          <span>Collect all dots to win the maze.</span>
+        </div>
+      </div>
+
+      <div class="intel-section">
+        <div class="intel-header">⚡ SHIFT PHASES (10s)</div>
+        <div class="intel-row">
+          <span class="intel-bullet">1.</span>
+          <span><strong>Cobalt Highways:</strong> Express North-South vertical avenues.</span>
+        </div>
+        <div class="intel-row">
+          <span class="intel-bullet">2.</span>
+          <span><strong>Emerald Serpent:</strong> Horizontal snake corridors.</span>
+        </div>
+        <div class="intel-row">
+          <span class="intel-bullet">3.</span>
+          <span><strong>Sunset Citadel:</strong> Center ring shortcuts unlocked.</span>
+        </div>
+        <div class="intel-row">
+          <span class="intel-bullet">🛡️</span>
+          <span><strong>Safe Nudge:</strong> Closing gates push you into safety; you never get crushed!</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Center Stage: Dynamically Scaled Canvas -->
+    <section id="center-stage">
+      <div id="canvas-container">
+        <canvas id="gameCanvas" width="630" height="630"></canvas>
+        
+        <!-- Live Toast Announcement -->
+        <div id="shift-toast">⚡ SHIFT IMMINENT IN 3s...</div>
+
+        <!-- Start Screen Modal -->
+        <div id="modal-start" class="modal-overlay active">
+          <div class="modal-card">
+            <h1 class="modal-title start">MAZE // SHIFT</h1>
+            <p class="modal-subtitle">
+              Pac-Man rules, but the labyrinth shifts layout & theme every <strong>10 seconds</strong>!
+            </p>
+
+            <div class="modal-diff-select">
+              <button class="modal-diff-btn" data-level="EASY">
+                <div>EASY</div>
+                <div style="font-size:0.6rem; color:#94a3b8;">~125 Dots</div>
+              </button>
+              <button class="modal-diff-btn active" data-level="MEDIUM">
+                <div>MEDIUM</div>
+                <div style="font-size:0.6rem; color:#94a3b8;">~150 Dots</div>
+              </button>
+              <button class="modal-diff-btn" data-level="HARD">
+                <div>HARD</div>
+                <div style="font-size:0.6rem; color:#94a3b8;">186 Dots</div>
+              </button>
+            </div>
+
+            <button id="btn-start-game" class="primary-btn">PLAY GAME</button>
+          </div>
+        </div>
+
+        <!-- Pause Screen Modal -->
+        <div id="modal-pause" class="modal-overlay">
+          <div class="modal-card">
+            <h2 class="modal-title start">PAUSED</h2>
+            <p class="modal-subtitle">Maze is frozen in time. Catch your breath.</p>
+            <button id="btn-resume-game" class="primary-btn">RESUME</button>
+          </div>
+        </div>
+
+        <!-- Victory Win Screen Modal -->
+        <div id="modal-win" class="modal-overlay">
+          <div class="modal-card">
+            <h2 class="modal-title win">VICTORY!</h2>
+            <p class="modal-subtitle">Brilliant run! You conquered every pellet in the labyrinth.</p>
+            <div class="stats-scoreboard">
+              <div class="score-cell">
+                <div class="score-cell-label">Final Score</div>
+                <div id="win-score" class="score-cell-val">0</div>
+              </div>
+              <div class="score-cell">
+                <div class="score-cell-label">Shifts Survived</div>
+                <div id="win-shifts" class="score-cell-val">0</div>
+              </div>
+            </div>
+            <button id="btn-win-restart" class="primary-btn">PLAY AGAIN</button>
+          </div>
+        </div>
+
+        <!-- Game Over Modal -->
+        <div id="modal-gameover" class="modal-overlay">
+          <div class="modal-card">
+            <h2 class="modal-title gameover">GAME OVER</h2>
+            <p class="modal-subtitle">Intercepted by a shifting phantom.</p>
+            <div class="stats-scoreboard">
+              <div class="score-cell">
+                <div class="score-cell-label">Score</div>
+                <div id="gameover-score" class="score-cell-val">0</div>
+              </div>
+              <div class="score-cell">
+                <div class="score-cell-label">Dots Left</div>
+                <div id="gameover-pellets" class="score-cell-val">0</div>
+              </div>
+            </div>
+            <button id="btn-gameover-restart" class="primary-btn">TRY AGAIN</button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Right Sidebar: Tactics & Active Difficulty Traits -->
+    <aside class="side-intel-card">
+      <div class="intel-section">
+        <div class="intel-header">👻 GHOST INTEL</div>
+        <div class="intel-row">
+          <span class="intel-bullet">&bull;</span>
+          <span><strong>Blinky (Red):</strong> Relentless pursuer. Tracks your trail via BFS.</span>
+        </div>
+        <div class="intel-row">
+          <span class="intel-bullet">&bull;</span>
+          <span><strong>Pinky:</strong> Flanker. Predicts your future moves to ambush!</span>
+        </div>
+        <div class="intel-row">
+          <span class="intel-bullet">&bull;</span>
+          <span><strong>Power Pellets:</strong> Turn ghosts blue for 7s. Chomp for <strong>+200 pts</strong>!</span>
+        </div>
+      </div>
+
+      <div class="intel-section">
+        <div class="intel-header">🎯 ACTIVE DIFFICULTY</div>
+        <div id="side-diff-badge" class="badge-status">MEDIUM MODE</div>
+        <div class="intel-row" style="margin-top:4px;">
+          <span class="intel-bullet">&bull;</span>
+          <span><strong>Player Speed:</strong> Fast (4.3 t/s)</span>
+        </div>
+        <div class="intel-row">
+          <span class="intel-bullet">&bull;</span>
+          <span id="side-ghost-speed-desc">Ghost Speed: Balanced (3.7 t/s)</span>
+        </div>
+        <div class="intel-row">
+          <span class="intel-bullet">&bull;</span>
+          <span id="side-ghost-ai-desc">AI: 1 Chaser + 1 Flanker</span>
+        </div>
+      </div>
+
+      <div class="intel-section">
+        <div class="intel-header">💡 PRO TACTIC</div>
+        <div class="intel-row">
+          <span>Save corner Power Pellets right before a maze shift so you can clear tricky zones with zero fear!</span>
+        </div>
+      </div>
+    </aside>
+
+  </main>
 
   <script>
     /**
-     * MAZE SHIFT - Core Architecture & Game Engine
-     * Zero external dependencies. Procedural Web Audio API sound.
-     * Symmetrical 21x21 grid mathematically proven to remain 100% connected
-     * across all 3 shifting layouts.
+     * MAZE // SHIFT - Modern Arcade Edition
+     * Fast, human-tuned movement (4.3 t/s player speed).
+     * Single-line compact header.
+     * Dynamic canvas scaling that fits 100% of any desktop view without scrolling.
+     * Informative sidebars, procedural Web Audio synth music & SFX.
      */
 
-    // --- Audio Synthesizer (Procedural Web Audio API) ---
+    // --- Procedural Web Audio Engine ---
     class SoundEngine {
       constructor() {
         this.ctx = null;
-        this.muted = false;
+        this.soundMuted = false;
+        this.musicMuted = false;
         this.initialized = false;
+        this.musicTimer = null;
+        this.stepIndex = 0;
       }
 
       init() {
@@ -630,6 +819,7 @@
           if (AudioContext) {
             this.ctx = new AudioContext();
             this.initialized = true;
+            this.startMusicLoop();
           }
         } catch (e) {
           console.warn('Web Audio API not supported', e);
@@ -642,102 +832,171 @@
         }
       }
 
-      toggleMute() {
-        this.muted = !this.muted;
-        return this.muted;
+      toggleSound() {
+        this.soundMuted = !this.soundMuted;
+        this.playButtonClick();
+        return this.soundMuted;
+      }
+
+      toggleMusic() {
+        this.musicMuted = !this.musicMuted;
+        this.playButtonClick();
+        return this.musicMuted;
+      }
+
+      startMusicLoop() {
+        if (this.musicTimer) clearInterval(this.musicTimer);
+        const bassline = [
+          110.0, 0, 110.0, 130.81, 146.83, 0, 130.81, 98.0,
+          110.0, 164.81, 146.83, 130.81, 110.0, 0, 146.83, 164.81
+        ];
+
+        this.musicTimer = setInterval(() => {
+          if (!this.musicMuted && this.ctx && this.ctx.state === 'running') {
+            const freq = bassline[this.stepIndex % bassline.length];
+            if (freq > 0) {
+              const now = this.ctx.currentTime;
+              const osc = this.ctx.createOscillator();
+              const gain = this.ctx.createGain();
+              const filter = this.ctx.createBiquadFilter();
+
+              osc.type = 'sawtooth';
+              osc.frequency.setValueAtTime(freq, now);
+              filter.type = 'lowpass';
+              filter.frequency.setValueAtTime(450, now);
+
+              gain.gain.setValueAtTime(0.035, now);
+              gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+
+              osc.connect(filter);
+              filter.connect(gain);
+              gain.connect(this.ctx.destination);
+
+              osc.start(now);
+              osc.stop(now + 0.15);
+            }
+          }
+          this.stepIndex++;
+        }, 115);
+      }
+
+      playButtonClick() {
+        if (this.soundMuted || !this.ctx) return;
+        this.resume();
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(750, now);
+        osc.frequency.exponentialRampToValueAtTime(1200, now + 0.04);
+        gain.gain.setValueAtTime(0.12, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.04);
+      }
+
+      playRestart() {
+        if (this.soundMuted || !this.ctx) return;
+        this.resume();
+        const now = this.ctx.currentTime;
+        [523.25, 783.99].forEach((f, i) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(f, now + i * 0.06);
+          gain.gain.setValueAtTime(0.15, now + i * 0.06);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.06 + 0.08);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now + i * 0.06);
+          osc.stop(now + i * 0.06 + 0.08);
+        });
       }
 
       playChomp(toneSwitch) {
-        if (this.muted || !this.ctx) return;
+        if (this.soundMuted || !this.ctx) return;
         this.resume();
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
         osc.type = 'triangle';
         const now = this.ctx.currentTime;
-        const freq = toneSwitch ? 440 : 330;
+        const freq = toneSwitch ? 460 : 340;
         osc.frequency.setValueAtTime(freq, now);
-        osc.frequency.exponentialRampToValueAtTime(toneSwitch ? 660 : 495, now + 0.05);
-
-        gain.gain.setValueAtTime(0.08, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
-
+        osc.frequency.exponentialRampToValueAtTime(toneSwitch ? 680 : 510, now + 0.045);
+        gain.gain.setValueAtTime(0.07, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.045);
         osc.connect(gain);
         gain.connect(this.ctx.destination);
         osc.start(now);
-        osc.stop(now + 0.05);
+        osc.stop(now + 0.045);
       }
 
       playPowerPellet() {
-        if (this.muted || !this.ctx) return;
+        if (this.soundMuted || !this.ctx) return;
         this.resume();
         const now = this.ctx.currentTime;
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(260, now);
-        osc.frequency.exponentialRampToValueAtTime(880, now + 0.25);
-
-        gain.gain.setValueAtTime(0.18, now);
-        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
-
+        osc.frequency.setValueAtTime(280, now);
+        osc.frequency.exponentialRampToValueAtTime(920, now + 0.22);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.22);
         osc.connect(gain);
         gain.connect(this.ctx.destination);
         osc.start(now);
-        osc.stop(now + 0.25);
+        osc.stop(now + 0.22);
       }
 
       playGhostEat() {
-        if (this.muted || !this.ctx) return;
+        if (this.soundMuted || !this.ctx) return;
         this.resume();
         const now = this.ctx.currentTime;
-        const notes = [440, 554, 659, 880];
-        notes.forEach((freq, idx) => {
+        [440, 554, 659, 880].forEach((freq, idx) => {
           const osc = this.ctx.createOscillator();
           const gain = this.ctx.createGain();
           osc.type = 'square';
-          osc.frequency.setValueAtTime(freq, now + idx * 0.04);
-          gain.gain.setValueAtTime(0.1, now + idx * 0.04);
-          gain.gain.exponentialRampToValueAtTime(0.01, now + idx * 0.04 + 0.06);
+          osc.frequency.setValueAtTime(freq, now + idx * 0.035);
+          gain.gain.setValueAtTime(0.12, now + idx * 0.035);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + idx * 0.035 + 0.05);
           osc.connect(gain);
           gain.connect(this.ctx.destination);
-          osc.start(now + idx * 0.04);
-          osc.stop(now + idx * 0.04 + 0.06);
+          osc.start(now + idx * 0.035);
+          osc.stop(now + idx * 0.035 + 0.05);
         });
       }
 
       playShiftWarning() {
-        if (this.muted || !this.ctx) return;
+        if (this.soundMuted || !this.ctx) return;
         this.resume();
         const now = this.ctx.currentTime;
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
         osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(520, now);
-        osc.frequency.exponentialRampToValueAtTime(320, now + 0.08);
-
-        gain.gain.setValueAtTime(0.08, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
-
+        osc.frequency.setValueAtTime(580, now);
+        osc.frequency.exponentialRampToValueAtTime(360, now + 0.07);
+        gain.gain.setValueAtTime(0.09, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
         osc.connect(gain);
         gain.connect(this.ctx.destination);
         osc.start(now);
-        osc.stop(now + 0.08);
+        osc.stop(now + 0.07);
       }
 
       playShiftWarp() {
-        if (this.muted || !this.ctx) return;
+        if (this.soundMuted || !this.ctx) return;
         this.resume();
         const now = this.ctx.currentTime;
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(150, now);
-        osc.frequency.exponentialRampToValueAtTime(800, now + 0.15);
-        osc.frequency.exponentialRampToValueAtTime(220, now + 0.35);
-
-        gain.gain.setValueAtTime(0.2, now);
+        osc.frequency.setValueAtTime(140, now);
+        osc.frequency.exponentialRampToValueAtTime(850, now + 0.15);
+        osc.frequency.exponentialRampToValueAtTime(200, now + 0.35);
+        gain.gain.setValueAtTime(0.22, now);
         gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
-
         osc.connect(gain);
         gain.connect(this.ctx.destination);
         osc.start(now);
@@ -745,16 +1004,16 @@
       }
 
       playDeath() {
-        if (this.muted || !this.ctx) return;
+        if (this.soundMuted || !this.ctx) return;
         this.resume();
         const now = this.ctx.currentTime;
-        const notes = [600, 550, 500, 450, 400, 350, 300, 250, 200];
+        const notes = [580, 520, 460, 400, 340, 280, 220, 160];
         notes.forEach((freq, idx) => {
           const osc = this.ctx.createOscillator();
           const gain = this.ctx.createGain();
           osc.type = 'sawtooth';
           osc.frequency.setValueAtTime(freq, now + idx * 0.05);
-          gain.gain.setValueAtTime(0.12, now + idx * 0.05);
+          gain.gain.setValueAtTime(0.14, now + idx * 0.05);
           gain.gain.exponentialRampToValueAtTime(0.01, now + idx * 0.05 + 0.05);
           osc.connect(gain);
           gain.connect(this.ctx.destination);
@@ -763,37 +1022,46 @@
         });
       }
 
-      playWin() {
-        if (this.muted || !this.ctx) return;
+      playGameOver() {
+        if (this.soundMuted || !this.ctx) return;
         this.resume();
         const now = this.ctx.currentTime;
-        const melody = [523, 659, 783, 1046, 783, 1046];
+        const notes = [330, 311, 293, 277, 220];
+        notes.forEach((freq, idx) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'square';
+          osc.frequency.setValueAtTime(freq, now + idx * 0.1);
+          gain.gain.setValueAtTime(0.15, now + idx * 0.1);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + idx * 0.1 + 0.12);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now + idx * 0.1);
+          osc.stop(now + idx * 0.1 + 0.12);
+        });
+      }
+
+      playWin() {
+        if (this.soundMuted || !this.ctx) return;
+        this.resume();
+        const now = this.ctx.currentTime;
+        const melody = [523, 659, 783, 1046, 880, 1046];
         melody.forEach((freq, idx) => {
           const osc = this.ctx.createOscillator();
           const gain = this.ctx.createGain();
           osc.type = 'triangle';
-          osc.frequency.setValueAtTime(freq, now + idx * 0.09);
-          gain.gain.setValueAtTime(0.15, now + idx * 0.09);
-          gain.gain.exponentialRampToValueAtTime(0.01, now + idx * 0.09 + 0.12);
+          osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+          gain.gain.setValueAtTime(0.18, now + idx * 0.08);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + idx * 0.08 + 0.1);
           osc.connect(gain);
           gain.connect(this.ctx.destination);
-          osc.start(now + idx * 0.09);
-          osc.stop(now + idx * 0.09 + 0.12);
+          osc.start(now + idx * 0.08);
+          osc.stop(now + idx * 0.08 + 0.1);
         });
       }
     }
 
     // --- Master Map Definition (21 x 21) ---
-    // Legend:
-    // '#' = Permanent Wall (in all layouts)
-    // '.' = Permanent Corridor with Regular Pellet
-    // 'O' = Permanent Corridor with Power Pellet
-    // ' ' = Permanent Corridor Empty (Spawn zones)
-    // '1' = Shifting Barrier Gate: Wall in Layout 1, Open in 2 & 3
-    // '2' = Shifting Barrier Gate: Wall in Layout 2, Open in 1 & 3
-    // '3' = Shifting Barrier Gate: Wall in Layout 3, Open in 1 & 2
-    // 'P' = Player Start
-    // 'G' = Ghost House Spawn
     const MASTER_GRID = [
       "#####################",
       "#O...#....2....#...O#",
@@ -818,13 +1086,77 @@
       "#####################"
     ];
 
-    const LAYOUT_NAMES = {
-      1: "LAYOUT 1: THE HIGHWAYS",
-      2: "LAYOUT 2: THE SERPENTINE",
-      3: "LAYOUT 3: THE CITADEL"
+    // Themes
+    const LAYOUT_META = {
+      1: {
+        name: "COBALT HIGHWAYS",
+        themeClass: "theme-layout-1",
+        wallBase: "#071128",
+        wallStroke: "#0066ff",
+        wallGlow: "#00e5ff",
+        pelletColor: "#ffd700",
+        powerColor: "#00ffff"
+      },
+      2: {
+        name: "EMERALD SERPENT",
+        themeClass: "theme-layout-2",
+        wallBase: "#052119",
+        wallStroke: "#059669",
+        wallGlow: "#10b981",
+        pelletColor: "#facc15",
+        powerColor: "#34d399"
+      },
+      3: {
+        name: "SUNSET CITADEL",
+        themeClass: "theme-layout-3",
+        wallBase: "#28062f",
+        wallStroke: "#c026d3",
+        wallGlow: "#f43f5e",
+        pelletColor: "#fb923c",
+        powerColor: "#f43f5e"
+      }
     };
 
-    // --- Particle System for Arcade Sparkles & Effects ---
+    // Tuned Speeds & Difficulty Presets
+    // Player speed is 4.3 tiles/sec (snappy, human-reactable, comfortable).
+    // Ghost speeds are scaled relative to player:
+    const DIFFICULTY_PRESETS = {
+      EASY: {
+        name: 'EASY',
+        ghost1Speed: 3.3, // Outrun by ~1.0 t/s
+        ghost2Speed: 3.1,
+        ghost1Color: '#ff6b8b', // Coral
+        ghost2Color: '#00f5b8', // Mint
+        aiMode: 'DIRECT_ONLY',
+        pelletDensity: 'LOW',
+        aiDesc: 'Both ghosts chase directly',
+        speedDesc: 'Ghost Speed: 3.3 t/s (Casual)'
+      },
+      MEDIUM: {
+        name: 'MEDIUM',
+        ghost1Speed: 3.7, // Outrun by ~0.6 t/s
+        ghost2Speed: 3.5,
+        ghost1Color: '#ff2a55', // Crimson
+        ghost2Color: '#00e5ff', // Sky Cyan
+        aiMode: 'PREDICTIVE_PINKY',
+        pelletDensity: 'MEDIUM',
+        aiDesc: '1 Chaser + 1 Flanker',
+        speedDesc: 'Ghost Speed: 3.7 t/s (Balanced)'
+      },
+      HARD: {
+        name: 'HARD',
+        ghost1Speed: 4.0, // Outrun by ~0.3 t/s
+        ghost2Speed: 3.9,
+        ghost1Color: '#ff1100', // Blood Red
+        ghost2Color: '#b5179e', // Shadow Violet
+        aiMode: 'FULL_PREDICTIVE',
+        pelletDensity: 'HIGH',
+        aiDesc: 'Both ghosts predict & cut corners',
+        speedDesc: 'Ghost Speed: 4.0 t/s (High Pressure)'
+      }
+    };
+
+    // --- Particle System ---
     class ParticlePool {
       constructor() {
         this.particles = [];
@@ -847,6 +1179,20 @@
         }
       }
 
+      spawnText(x, y, text, color) {
+        this.particles.push({
+          x: x,
+          y: y,
+          vx: 0,
+          vy: -1.2,
+          life: 1.0,
+          decay: 0.02,
+          text: text,
+          color: color,
+          isText: true
+        });
+      }
+
       update(dt) {
         for (let i = this.particles.length - 1; i >= 0; i--) {
           const p = this.particles[i];
@@ -863,16 +1209,23 @@
         ctx.save();
         for (const p of this.particles) {
           ctx.globalAlpha = Math.max(0, p.life);
-          ctx.fillStyle = p.color;
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
-          ctx.fill();
+          if (p.isText) {
+            ctx.font = 'bold 12px system-ui, sans-serif';
+            ctx.fillStyle = p.color;
+            ctx.textAlign = 'center';
+            ctx.fillText(p.text, p.x, p.y);
+          } else {
+            ctx.fillStyle = p.color;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
+            ctx.fill();
+          }
         }
         ctx.restore();
       }
     }
 
-    // --- Game Engine Class ---
+    // --- Main Game Engine ---
     class MazeShiftGame {
       constructor() {
         this.canvas = document.getElementById('gameCanvas');
@@ -884,31 +1237,31 @@
         this.gridRows = 21;
         this.gridCols = 21;
         this.tileSize = 28;
-        this.width = this.gridCols * this.tileSize;
-        this.height = this.gridRows * this.tileSize;
 
-        // Game State Variables
-        this.state = 'START'; // 'START', 'PLAYING', 'PAUSED', 'WIN', 'GAMEOVER'
+        // State & Scoring
+        this.state = 'START';
         this.score = 0;
         this.highScore = parseInt(localStorage.getItem('mazeshift_highscore') || '0', 10);
         this.lives = 3;
         this.shiftsSurvived = 0;
-        this.enemiesEnabled = true;
 
-        // Maze Layout & Shifting
-        this.currentLayout = 1; // 1, 2, or 3
-        this.shiftInterval = 10.0; // 10 seconds per shift
+        // Difficulty: EASY, MEDIUM, HARD
+        this.difficulty = 'MEDIUM';
+
+        // Layout & Shift
+        this.currentLayout = 1;
+        this.shiftInterval = 10.0;
         this.shiftTimer = this.shiftInterval;
         this.shiftWarningTriggered = false;
-        this.shiftShockwave = 0; // Visual pulse animation
+        this.shiftShockwave = 0;
 
-        // Pellets & Map Data
-        this.pellets = []; // 2D array [r][c]: 0=none, 1=regular, 2=power
+        // Pellets
+        this.pellets = [];
         this.totalPellets = 0;
         this.remainingPellets = 0;
         this.pelletChompTone = false;
 
-        // Player Entity
+        // Player Entity (Fast, tuned 4.3 tiles/sec for nimble reaction time)
         this.player = {
           gridX: 10,
           gridY: 17,
@@ -918,19 +1271,18 @@
           dirY: 0,
           nextDirX: 0,
           nextDirY: 0,
-          speed: 4.8, // tiles per second
+          speed: 4.3, // Fast & human-reactable
           mouthAngle: 0,
-          mouthOpening: true,
-          radius: 11
+          mouthOpening: true
         };
 
-        // Ghost Entities (Pac-Man inspired)
-        this.frightenedTimer = 0; // Duration ghosts remain vulnerable
+        // Ghost Entities
+        this.frightenedTimer = 0;
         this.ghosts = [
           {
             id: 'blinky',
             name: 'Blinky',
-            color: '#ff2a55',
+            color: DIFFICULTY_PRESETS.MEDIUM.ghost1Color,
             gridX: 10,
             gridY: 8,
             targetX: 10,
@@ -939,13 +1291,13 @@
             y: 8,
             dirX: 0,
             dirY: -1,
-            speed: 3.8,
+            speed: DIFFICULTY_PRESETS.MEDIUM.ghost1Speed,
             state: 'LEAVING'
           },
           {
             id: 'pinky',
             name: 'Pinky',
-            color: '#ff77d2',
+            color: DIFFICULTY_PRESETS.MEDIUM.ghost2Color,
             gridX: 10,
             gridY: 9,
             targetX: 10,
@@ -954,7 +1306,7 @@
             y: 9,
             dirX: 0,
             dirY: -1,
-            speed: 3.4,
+            speed: DIFFICULTY_PRESETS.MEDIUM.ghost2Speed,
             state: 'LEAVING'
           }
         ];
@@ -966,15 +1318,20 @@
           pellets: document.getElementById('pellets-display'),
           shiftTimer: document.getElementById('shift-timer-display'),
           shiftBar: document.getElementById('shift-bar-fill'),
-          layoutBadge: document.getElementById('layout-title-badge'),
           lives: document.getElementById('lives-display'),
-          statusPill: document.getElementById('game-status-pill'),
-          announcement: document.getElementById('shift-announcement'),
+          shiftToast: document.getElementById('shift-toast'),
           btnSound: document.getElementById('btn-sound'),
-          soundIcon: document.getElementById('sound-icon'),
-          btnEnemies: document.getElementById('btn-enemies'),
+          btnMusic: document.getElementById('btn-music'),
           btnPause: document.getElementById('btn-pause'),
           btnRestart: document.getElementById('btn-restart'),
+          pills: {
+            EASY: document.getElementById('pill-easy'),
+            MEDIUM: document.getElementById('pill-medium'),
+            HARD: document.getElementById('pill-hard')
+          },
+          sideDiffBadge: document.getElementById('side-diff-badge'),
+          sideGhostSpeedDesc: document.getElementById('side-ghost-speed-desc'),
+          sideGhostAiDesc: document.getElementById('side-ghost-ai-desc'),
           modalStart: document.getElementById('modal-start'),
           modalPause: document.getElementById('modal-pause'),
           modalWin: document.getElementById('modal-win'),
@@ -986,8 +1343,7 @@
           winScore: document.getElementById('win-score'),
           winShifts: document.getElementById('win-shifts'),
           gameoverScore: document.getElementById('gameover-score'),
-          gameoverPellets: document.getElementById('gameover-pellets'),
-          gameoverReason: document.getElementById('gameover-reason')
+          gameoverPellets: document.getElementById('gameover-pellets')
         };
 
         this.init();
@@ -998,27 +1354,29 @@
         window.addEventListener('resize', () => this.setupCanvasSize());
         this.setupKeyboard();
         this.setupEventListeners();
-        this.loadMapAndPellets();
+        this.applyTheme(1);
+        this.setDifficulty('MEDIUM');
         this.updateHUD();
 
-        // Run internal invariants test
-        this.runSelfDiagnostics();
-
-        // Start Loop
+        // Loop
         this.lastTime = performance.now();
         requestAnimationFrame((t) => this.gameLoop(t));
       }
 
       setupCanvasSize() {
-        // Fit canvas nicely in desktop window maintaining aspect ratio
-        const availableHeight = window.innerHeight - 130;
-        const availableWidth = window.innerWidth - 60;
-        const size = Math.min(availableHeight, availableWidth, 620);
-        this.tileSize = Math.floor(size / this.gridCols);
+        // Fits 100% within the desktop viewport without ANY vertical scrolling!
+        // Viewport height minus 48px header minus 24px vertical padding = available height
+        const availableHeight = window.innerHeight - 72;
+        const hasSidebars = window.innerWidth >= 1040;
+        // On wide screen, reserve width for the 2 sidebars (2 * 230px + gaps)
+        const availableWidth = hasSidebars ? window.innerWidth - 500 : window.innerWidth - 32;
+
+        const maxIdeal = 672;
+        const size = Math.min(availableHeight, availableWidth, maxIdeal);
+        this.tileSize = Math.max(22, Math.floor(size / this.gridCols));
         this.width = this.tileSize * this.gridCols;
         this.height = this.tileSize * this.gridRows;
 
-        // Support high-DPI crisp rendering
         const dpr = window.devicePixelRatio || 1;
         this.canvas.width = this.width * dpr;
         this.canvas.height = this.height * dpr;
@@ -1030,10 +1388,8 @@
 
       setupKeyboard() {
         window.addEventListener('keydown', (e) => {
-          // Initialize audio on first user key/click
           this.sound.init();
 
-          // Keys for directional control
           const key = e.key.toLowerCase();
           if (['arrowup', 'w'].includes(key)) {
             this.setPlayerDirection(0, -1);
@@ -1051,13 +1407,14 @@
             this.togglePause();
             e.preventDefault();
           } else if (key === 'r') {
+            this.sound.playRestart();
             this.restartGame();
             e.preventDefault();
           } else if (key === 'm') {
             this.toggleSound();
             e.preventDefault();
-          } else if (key === 'e') {
-            this.toggleEnemies();
+          } else if (key === 'n') {
+            this.toggleMusic();
             e.preventDefault();
           }
         });
@@ -1066,28 +1423,97 @@
       setupEventListeners() {
         this.ui.btnStart.addEventListener('click', () => {
           this.sound.init();
+          this.sound.playButtonClick();
           this.startGame();
         });
-        this.ui.btnResume.addEventListener('click', () => this.togglePause());
-        this.ui.btnWinRestart.addEventListener('click', () => this.restartGame());
-        this.ui.btnGameOverRestart.addEventListener('click', () => this.restartGame());
+        this.ui.btnResume.addEventListener('click', () => {
+          this.sound.playButtonClick();
+          this.togglePause();
+        });
+        this.ui.btnWinRestart.addEventListener('click', () => {
+          this.sound.playRestart();
+          this.restartGame();
+        });
+        this.ui.btnGameOverRestart.addEventListener('click', () => {
+          this.sound.playRestart();
+          this.restartGame();
+        });
 
-        this.ui.btnPause.addEventListener('click', () => this.togglePause());
-        this.ui.btnRestart.addEventListener('click', () => this.restartGame());
+        this.ui.btnPause.addEventListener('click', () => {
+          this.sound.playButtonClick();
+          this.togglePause();
+        });
+        this.ui.btnRestart.addEventListener('click', () => {
+          this.sound.playRestart();
+          this.restartGame();
+        });
         this.ui.btnSound.addEventListener('click', () => this.toggleSound());
-        this.ui.btnEnemies.addEventListener('click', () => this.toggleEnemies());
+        this.ui.btnMusic.addEventListener('click', () => this.toggleMusic());
+
+        // Header Difficulty Pills
+        Object.keys(this.ui.pills).forEach(level => {
+          this.ui.pills[level].addEventListener('click', () => {
+            this.sound.init();
+            this.sound.playButtonClick();
+            this.setDifficulty(level);
+            this.restartGame();
+          });
+        });
+
+        // Start Modal Difficulty Buttons
+        document.querySelectorAll('.modal-diff-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            this.sound.init();
+            this.sound.playButtonClick();
+            const level = btn.getAttribute('data-level');
+            this.setDifficulty(level);
+          });
+        });
+      }
+
+      setDifficulty(level) {
+        this.difficulty = level;
+        const preset = DIFFICULTY_PRESETS[level];
+
+        // Header Pills
+        Object.keys(this.ui.pills).forEach(lvl => {
+          this.ui.pills[lvl].classList.toggle('active', lvl === level);
+        });
+
+        // Modal Buttons
+        document.querySelectorAll('.modal-diff-btn').forEach(btn => {
+          btn.classList.toggle('active', btn.getAttribute('data-level') === level);
+        });
+
+        // Update Side Intel
+        this.ui.sideDiffBadge.textContent = `${level} MODE`;
+        this.ui.sideGhostSpeedDesc.textContent = preset.speedDesc;
+        this.ui.sideGhostAiDesc.textContent = `AI: ${preset.aiDesc}`;
+
+        // Apply ghost speeds and colors
+        this.ghosts[0].speed = preset.ghost1Speed;
+        this.ghosts[0].color = preset.ghost1Color;
+        this.ghosts[1].speed = preset.ghost2Speed;
+        this.ghosts[1].color = preset.ghost2Color;
+
+        this.loadMapAndPellets();
+        this.updateHUD();
+      }
+
+      applyTheme(layoutId) {
+        document.body.className = LAYOUT_META[layoutId].themeClass;
       }
 
       toggleSound() {
-        const isMuted = this.sound.toggleMute();
-        this.ui.soundIcon.textContent = isMuted ? '🔇' : '🔊';
+        const isMuted = this.sound.toggleSound();
+        this.ui.btnSound.textContent = isMuted ? '🔇' : '🔊';
         this.ui.btnSound.classList.toggle('active', !isMuted);
       }
 
-      toggleEnemies() {
-        this.enemiesEnabled = !this.enemiesEnabled;
-        this.ui.btnEnemies.classList.toggle('active', this.enemiesEnabled);
-        this.ui.btnEnemies.innerHTML = this.enemiesEnabled ? '<span>👻 ON</span>' : '<span>👻 OFF</span>';
+      toggleMusic() {
+        const isMuted = this.sound.toggleMusic();
+        this.ui.btnMusic.textContent = isMuted ? '🔇' : '🎵';
+        this.ui.btnMusic.classList.toggle('active', !isMuted);
       }
 
       togglePause() {
@@ -1095,13 +1521,9 @@
         if (this.state === 'PLAYING') {
           this.state = 'PAUSED';
           this.ui.modalPause.classList.add('active');
-          this.ui.statusPill.textContent = 'PAUSED';
-          this.ui.statusPill.className = 'status-paused';
         } else {
           this.state = 'PLAYING';
           this.ui.modalPause.classList.remove('active');
-          this.ui.statusPill.textContent = 'PLAYING';
-          this.ui.statusPill.className = 'status-playing';
           this.lastTime = performance.now();
         }
       }
@@ -1121,6 +1543,8 @@
         this.lives = 3;
         this.shiftsSurvived = 0;
         this.currentLayout = 1;
+        this.applyTheme(1);
+
         this.shiftTimer = this.shiftInterval;
         this.shiftWarningTriggered = false;
         this.shiftShockwave = 0;
@@ -1131,8 +1555,6 @@
         this.resetGhostPositions();
 
         this.state = 'PLAYING';
-        this.ui.statusPill.textContent = 'PLAYING';
-        this.ui.statusPill.className = 'status-playing';
         this.updateHUD();
         this.lastTime = performance.now();
       }
@@ -1140,17 +1562,33 @@
       loadMapAndPellets() {
         this.pellets = [];
         this.totalPellets = 0;
+        const density = DIFFICULTY_PRESETS[this.difficulty].pelletDensity;
 
         for (let r = 0; r < this.gridRows; r++) {
           this.pellets[r] = [];
           for (let c = 0; c < this.gridCols; c++) {
             const ch = MASTER_GRID[r][c];
-            if (ch === '.') {
-              this.pellets[r][c] = 1; // Regular Pellet
+
+            if (ch === 'O') {
+              this.pellets[r][c] = 2; // Power Pellet always in 4 corners
               this.totalPellets++;
-            } else if (ch === 'O') {
-              this.pellets[r][c] = 2; // Power Pellet
-              this.totalPellets++;
+            } else if (ch === '.') {
+              let include = true;
+              if (density === 'LOW') {
+                // Easy Mode: ~125 pellets (fast, breezy, satisfying)
+                include = (r * 2 + c) % 3 !== 0;
+              } else if (density === 'MEDIUM') {
+                // Medium Mode: ~150 pellets
+                include = (r * 3 + c) % 5 !== 0;
+              }
+              // Hard Mode: 100% of pellets (186 pellets)
+
+              if (include) {
+                this.pellets[r][c] = 1;
+                this.totalPellets++;
+              } else {
+                this.pellets[r][c] = 0;
+              }
             } else {
               this.pellets[r][c] = 0;
             }
@@ -1171,6 +1609,8 @@
       }
 
       resetGhostPositions() {
+        const preset = DIFFICULTY_PRESETS[this.difficulty];
+
         const b = this.ghosts[0];
         b.gridX = 10;
         b.gridY = 8;
@@ -1180,7 +1620,8 @@
         b.y = 8;
         b.dirX = 0;
         b.dirY = -1;
-        b.speed = 3.8;
+        b.speed = preset.ghost1Speed;
+        b.color = preset.ghost1Color;
         b.state = 'LEAVING';
 
         const p = this.ghosts[1];
@@ -1192,7 +1633,8 @@
         p.y = 9;
         p.dirX = 0;
         p.dirY = -1;
-        p.speed = 3.4;
+        p.speed = preset.ghost2Speed;
+        p.color = preset.ghost2Color;
         p.state = 'LEAVING';
       }
 
@@ -1206,19 +1648,16 @@
         return false;
       }
 
-      // Buffer direction so turning feels responsive at corridor intersections
       setPlayerDirection(dx, dy) {
         this.player.nextDirX = dx;
         this.player.nextDirY = dy;
 
-        // If player is currently stationary or reversing, turn immediately
         if (this.player.dirX === 0 && this.player.dirY === 0) {
           if (!this.isWall(this.player.gridX + dx, this.player.gridY + dy)) {
             this.player.dirX = dx;
             this.player.dirY = dy;
           }
         } else if (this.player.dirX === -dx && this.player.dirY === -dy) {
-          // Reversing direction in corridor
           this.player.dirX = dx;
           this.player.dirY = dy;
           this.player.gridX = Math.round(this.player.x);
@@ -1226,7 +1665,7 @@
         }
       }
 
-      // --- Maze Shift Execution & Safety System ---
+      // --- Maze Shift Execution ---
       performMazeShift() {
         const nextLayout = (this.currentLayout % 3) + 1;
         this.currentLayout = nextLayout;
@@ -1234,30 +1673,24 @@
         this.shiftShockwave = 1.0;
         this.shiftWarningTriggered = false;
 
+        this.applyTheme(nextLayout);
         this.sound.playShiftWarp();
 
-        // 1. Safety Check for Player: If player is occupying a gate that just closed,
-        // nudge them safely to the nearest open neighbor tile!
+        // 1. Safety Check for Player
         const pCol = Math.round(this.player.x);
         const pRow = Math.round(this.player.y);
-
         if (this.isWall(pCol, pRow, this.currentLayout)) {
-          // Reposition to closest valid walkable neighbor
-          const safeNeighbor = this.findNearestWalkableNeighbor(pCol, pRow);
-          if (safeNeighbor) {
-            this.player.gridX = safeNeighbor.c;
-            this.player.gridY = safeNeighbor.r;
-            this.player.x = safeNeighbor.c;
-            this.player.y = safeNeighbor.r;
-            this.particles.spawn(
-              (safeNeighbor.c + 0.5) * this.tileSize,
-              (safeNeighbor.r + 0.5) * this.tileSize,
-              '#00e5ff', 12, 3, 4
-            );
+          const safe = this.findNearestWalkableNeighbor(pCol, pRow);
+          if (safe) {
+            this.player.gridX = safe.c;
+            this.player.gridY = safe.r;
+            this.player.x = safe.c;
+            this.player.y = safe.r;
+            this.particles.spawnText((safe.c + 0.5) * this.tileSize, (safe.r + 0.2) * this.tileSize, 'SAFE NUDGE!', '#00e5ff');
           }
         }
 
-        // 2. Safety Check for Ghosts: Ensure ghosts are never in closed gates
+        // 2. Safety Check for Ghosts
         for (const ghost of this.ghosts) {
           const gCol = Math.round(ghost.x);
           const gRow = Math.round(ghost.y);
@@ -1277,37 +1710,27 @@
           }
         }
 
-        // Announce shift on HUD
-        this.showAnnouncement(`⚡ SHIFT: ${LAYOUT_NAMES[this.currentLayout]}!`);
+        this.showToast(`⚡ ${LAYOUT_META[this.currentLayout].name}!`);
         this.updateHUD();
       }
 
       findNearestWalkableNeighbor(col, row) {
         const dirs = [
-          { c: col, r: row - 1 },
-          { c: col, r: row + 1 },
-          { c: col - 1, r: row },
-          { c: col + 1, r: row }
+          { c: col, r: row - 1 }, { c: col, r: row + 1 },
+          { c: col - 1, r: row }, { c: col + 1, r: row }
         ];
         for (const d of dirs) {
-          if (!this.isWall(d.c, d.r, this.currentLayout)) {
-            return d;
-          }
+          if (!this.isWall(d.c, d.r, this.currentLayout)) return d;
         }
-        // Breadth-first search fallback in rare multi-depth shift
         const visited = new Set();
         const queue = [{ c: col, r: row }];
         visited.add(`${col},${row}`);
         while (queue.length > 0) {
           const curr = queue.shift();
-          if (!this.isWall(curr.c, curr.r, this.currentLayout)) {
-            return curr;
-          }
+          if (!this.isWall(curr.c, curr.r, this.currentLayout)) return curr;
           const neighbors = [
-            { c: curr.c, r: curr.r - 1 },
-            { c: curr.c, r: curr.r + 1 },
-            { c: curr.c - 1, r: curr.r },
-            { c: curr.c + 1, r: curr.r }
+            { c: curr.c, r: curr.r - 1 }, { c: curr.c, r: curr.r + 1 },
+            { c: curr.c - 1, r: curr.r }, { c: curr.c + 1, r: curr.r }
           ];
           for (const n of neighbors) {
             const key = `${n.c},${n.r}`;
@@ -1320,15 +1743,13 @@
         return null;
       }
 
-      showAnnouncement(text) {
-        this.ui.announcement.textContent = text;
-        this.ui.announcement.classList.add('show');
-        setTimeout(() => {
-          this.ui.announcement.classList.remove('show');
-        }, 2200);
+      showToast(text) {
+        this.ui.shiftToast.textContent = text;
+        this.ui.shiftToast.classList.add('show');
+        setTimeout(() => this.ui.shiftToast.classList.remove('show'), 2200);
       }
 
-      // --- Main Game Loop & Updates ---
+      // --- Main Loop ---
       gameLoop(timestamp) {
         const dt = Math.min((timestamp - this.lastTime) / 1000, 0.1);
         this.lastTime = timestamp;
@@ -1342,23 +1763,19 @@
       }
 
       update(dt) {
-        // 1. Shift Timer Countdown
+        // Shift Timer
         this.shiftTimer -= dt;
         if (this.shiftTimer <= 3.0 && !this.shiftWarningTriggered) {
           this.shiftWarningTriggered = true;
           this.sound.playShiftWarning();
-          this.ui.statusPill.textContent = 'SHIFT IMMINENT!';
-          this.ui.statusPill.className = 'status-warning';
         }
 
         if (this.shiftTimer <= 0) {
           this.shiftTimer = this.shiftInterval;
           this.performMazeShift();
-          this.ui.statusPill.textContent = 'PLAYING';
-          this.ui.statusPill.className = 'status-playing';
         }
 
-        // Frightened Timer for Super Pellet
+        // Frightened Timer
         if (this.frightenedTimer > 0) {
           this.frightenedTimer -= dt;
           if (this.frightenedTimer <= 0) {
@@ -1371,25 +1788,20 @@
           }
         }
 
-        // 2. Player Movement with Sub-tile smooth interpolation
+        // Player & Pellet Check
         this.updatePlayer(dt);
-
-        // 3. Pellet Collection (checked strictly at player's cell)
         this.checkPelletCollection();
 
-        // 4. Ghost AI & Movement
-        if (this.enemiesEnabled) {
-          this.updateGhosts(dt);
-          this.checkGhostCollisions();
-        }
+        // Ghost Movement & Collisions
+        this.updateGhosts(dt);
+        this.checkGhostCollisions();
 
-        // 5. Update Particles & Shockwave
+        // Particles
         this.particles.update(dt);
         if (this.shiftShockwave > 0) {
           this.shiftShockwave = Math.max(0, this.shiftShockwave - dt * 2.0);
         }
 
-        // 6. Refresh HUD
         this.updateHUD();
       }
 
@@ -1397,12 +1809,10 @@
         const p = this.player;
         const moveDist = p.speed * dt;
 
-        // Try changing to buffered direction if at a tile center or aligned
-        const atTileCenterX = Math.abs(p.x - Math.round(p.x)) < 0.15;
-        const atTileCenterY = Math.abs(p.y - Math.round(p.y)) < 0.15;
+        const atTileCenterX = Math.abs(p.x - Math.round(p.x)) < 0.2;
+        const atTileCenterY = Math.abs(p.y - Math.round(p.y)) < 0.2;
 
         if (p.nextDirX !== 0 || p.nextDirY !== 0) {
-          // If turning onto perpendicular axis, check tile intersection
           if (p.nextDirX !== p.dirX || p.nextDirY !== p.dirY) {
             const checkCol = Math.round(p.x) + p.nextDirX;
             const checkRow = Math.round(p.y) + p.nextDirY;
@@ -1415,14 +1825,9 @@
           }
         }
 
-        // Advance along current direction
         if (p.dirX !== 0 || p.dirY !== 0) {
           const nextX = p.x + p.dirX * moveDist;
           const nextY = p.y + p.dirY * moveDist;
-
-          // Check wall collision ahead
-          const leadCol = Math.round(p.dirX > 0 ? Math.ceil(nextX) : Math.floor(nextX));
-          const leadRow = Math.round(p.dirY > 0 ? Math.ceil(nextY) : Math.floor(nextY));
 
           if (p.dirX !== 0) {
             const checkCol = p.dirX > 0 ? Math.floor(p.x + 0.5 + p.dirX * 0.45) : Math.floor(p.x + 0.5 + p.dirX * 0.45);
@@ -1447,16 +1852,15 @@
           p.gridX = Math.round(p.x);
           p.gridY = Math.round(p.y);
 
-          // Animate chomp mouth
           if (p.mouthOpening) {
-            p.mouthAngle += dt * 10;
-            if (p.mouthAngle > 0.3) p.mouthOpening = false;
+            p.mouthAngle += dt * 9;
+            if (p.mouthAngle > 0.28) p.mouthOpening = false;
           } else {
-            p.mouthAngle -= dt * 10;
+            p.mouthAngle -= dt * 9;
             if (p.mouthAngle <= 0.04) p.mouthOpening = true;
           }
         } else {
-          p.mouthAngle = 0.15;
+          p.mouthAngle = 0.14;
         }
       }
 
@@ -1464,46 +1868,34 @@
         const c = Math.round(this.player.x);
         const r = Math.round(this.player.y);
 
-        // Player must be within close radius of tile center to eat
         const distSq = (this.player.x - c) ** 2 + (this.player.y - r) ** 2;
-        if (distSq < 0.18) {
+        if (distSq < 0.22) {
           if (this.pellets[r] && this.pellets[r][c] > 0) {
             const type = this.pellets[r][c];
-            this.pellets[r][c] = 0; // eaten
+            this.pellets[r][c] = 0;
             this.remainingPellets--;
 
             if (type === 1) {
-              // Regular Pellet
               this.score += 10;
               this.pelletChompTone = !this.pelletChompTone;
               this.sound.playChomp(this.pelletChompTone);
-              this.particles.spawn(
-                (c + 0.5) * this.tileSize,
-                (r + 0.5) * this.tileSize,
-                '#ffd700', 4, 1.5, 2.5
-              );
+              this.particles.spawn((c + 0.5) * this.tileSize, (r + 0.5) * this.tileSize, LAYOUT_META[this.currentLayout].pelletColor, 3, 1.2, 2.2);
             } else if (type === 2) {
-              // Power Pellet
               this.score += 50;
-              this.frightenedTimer = 7.0; // 7 seconds of frightened ghosts
+              this.frightenedTimer = 7.0;
               this.sound.playPowerPellet();
+              this.particles.spawnText((c + 0.5) * this.tileSize, (r + 0.5) * this.tileSize, '+50 POWER!', '#00e5ff');
               this.ghosts.forEach(g => {
                 if (g.state !== 'RETURNING') g.state = 'FRIGHTENED';
               });
-              this.particles.spawn(
-                (c + 0.5) * this.tileSize,
-                (r + 0.5) * this.tileSize,
-                '#00e5ff', 16, 3.5, 4.5
-              );
+              this.particles.spawn((c + 0.5) * this.tileSize, (r + 0.5) * this.tileSize, '#00ffff', 18, 3.5, 4.0);
             }
 
-            // High Score update
             if (this.score > this.highScore) {
               this.highScore = this.score;
               localStorage.setItem('mazeshift_highscore', this.highScore.toString());
             }
 
-            // Check Win Condition: All pellets collected
             if (this.remainingPellets <= 0) {
               this.handleVictory();
             }
@@ -1541,65 +1933,63 @@
               this.onGhostReachedTile(ghost);
             }
           } else {
-            // Stationary (e.g. after shift or reset), decide next tile immediately
             this.onGhostReachedTile(ghost);
           }
         }
       }
 
       onGhostReachedTile(ghost) {
-        // State transitions upon reaching tile
         if (ghost.state === 'LEAVING') {
-          if (ghost.gridY <= 7) {
-            ghost.state = 'CHASE';
-          }
+          if (ghost.gridY <= 7) ghost.state = 'CHASE';
         } else if (ghost.state === 'RETURNING') {
-          if (ghost.gridX === 10 && (ghost.gridY === 8 || ghost.gridY === 9)) {
-            ghost.state = 'LEAVING';
-          }
+          if (ghost.gridX === 10 && (ghost.gridY === 8 || ghost.gridY === 9)) ghost.state = 'LEAVING';
         }
 
-        // Determine destination target based on state
         let target = { c: this.player.gridX, r: this.player.gridY };
+        const preset = DIFFICULTY_PRESETS[this.difficulty];
 
         if (ghost.state === 'LEAVING') {
           target = { c: 10, r: 7 };
         } else if (ghost.state === 'RETURNING') {
           target = { c: 10, r: 8 };
         } else if (ghost.state === 'FRIGHTENED') {
-          // Flee towards corners
           target = ghost.id === 'blinky' ? { c: 1, r: 1 } : { c: 19, r: 1 };
-        } else if (ghost.id === 'pinky') {
-          // Flank 2 tiles ahead of player
-          const forwardC = this.player.gridX + this.player.dirX * 2;
-          const forwardR = this.player.gridY + this.player.dirY * 2;
-          if (!this.isWall(forwardC, forwardR)) {
-            target = { c: forwardC, r: forwardR };
+        } else if (ghost.state === 'CHASE') {
+          if (preset.aiMode === 'DIRECT_ONLY') {
+            target = { c: this.player.gridX, r: this.player.gridY };
+          } else if (preset.aiMode === 'PREDICTIVE_PINKY') {
+            if (ghost.id === 'pinky') {
+              const forwardC = this.player.gridX + this.player.dirX * 2;
+              const forwardR = this.player.gridY + this.player.dirY * 2;
+              if (!this.isWall(forwardC, forwardR)) target = { c: forwardC, r: forwardR };
+            }
+          } else if (preset.aiMode === 'FULL_PREDICTIVE') {
+            if (ghost.id === 'blinky') {
+              const forwardC = this.player.gridX + this.player.dirX * 2;
+              const forwardR = this.player.gridY + this.player.dirY * 2;
+              if (!this.isWall(forwardC, forwardR)) target = { c: forwardC, r: forwardR };
+            } else if (ghost.id === 'pinky') {
+              const flankC = this.player.gridX + this.player.dirX * 3 - this.player.dirY * 2;
+              const flankR = this.player.gridY + this.player.dirY * 3 + this.player.dirX * 2;
+              if (!this.isWall(flankC, flankR)) target = { c: flankC, r: flankR };
+            }
           }
         }
 
-        // Compute shortest path step via BFS
         let step = this.findBfsNextStep(ghost.gridX, ghost.gridY, target.c, target.r);
 
-        // If BFS returned 0,0 (already at target or blocked), pick any non-reverse valid adjacent tile
         if (step.dx === 0 && step.dy === 0) {
           const dirs = [
-            { dx: 0, dy: -1 },
-            { dx: -1, dy: 0 },
-            { dx: 0, dy: 1 },
-            { dx: 1, dy: 0 }
+            { dx: 0, dy: -1 }, { dx: -1, dy: 0 },
+            { dx: 0, dy: 1 },  { dx: 1, dy: 0 }
           ];
           for (const d of dirs) {
-            // Avoid immediate reverse if possible
-            if (d.dx === -ghost.dirX && d.dy === -ghost.dirY && (ghost.dirX !== 0 || ghost.dirY !== 0)) {
-              continue;
-            }
+            if (d.dx === -ghost.dirX && d.dy === -ghost.dirY && (ghost.dirX !== 0 || ghost.dirY !== 0)) continue;
             if (!this.isWall(ghost.gridX + d.dx, ghost.gridY + d.dy)) {
               step = d;
               break;
             }
           }
-          // If still no move, allow reverse
           if (step.dx === 0 && step.dy === 0) {
             for (const d of dirs) {
               if (!this.isWall(ghost.gridX + d.dx, ghost.gridY + d.dy)) {
@@ -1617,13 +2007,10 @@
       }
 
       findBfsNextStep(startC, startR, targetC, targetR) {
-        if (startC === targetC && startR === targetR) {
-          return { dx: 0, dy: 0 };
-        }
+        if (startC === targetC && startR === targetR) return { dx: 0, dy: 0 };
 
         const targetKey = `${targetC},${targetR}`;
         const startKey = `${startC},${startR}`;
-
         const queue = [targetKey];
         const cameFrom = new Map();
         cameFrom.set(targetKey, null);
@@ -1666,18 +2053,13 @@
           const distSq = (this.player.x - ghost.x) ** 2 + (this.player.y - ghost.y) ** 2;
           if (distSq < 0.6) {
             if (ghost.state === 'FRIGHTENED') {
-              // Eat ghost!
               ghost.state = 'RETURNING';
               this.score += 200;
               this.sound.playGhostEat();
-              this.particles.spawn(
-                (ghost.x + 0.5) * this.tileSize,
-                (ghost.y + 0.5) * this.tileSize,
-                '#ffffff', 14, 2.5, 3.5
-              );
-              this.showAnnouncement('👻 +200 GHOST CHOMP!');
+              this.particles.spawnText((ghost.x + 0.5) * this.tileSize, (ghost.y + 0.5) * this.tileSize, '+200', '#ffffff');
+              this.particles.spawn((ghost.x + 0.5) * this.tileSize, (ghost.y + 0.5) * this.tileSize, '#ffffff', 14, 2.5, 3.5);
+              this.showToast('👻 +200 GHOST CHOMP!');
             } else if (ghost.state === 'CHASE' || ghost.state === 'LEAVING') {
-              // Player caught!
               this.handlePlayerDeath();
               break;
             }
@@ -1688,25 +2070,18 @@
       handlePlayerDeath() {
         this.lives--;
         this.sound.playDeath();
-        this.particles.spawn(
-          (this.player.x + 0.5) * this.tileSize,
-          (this.player.y + 0.5) * this.tileSize,
-          '#ffe600', 25, 4, 4.5
-        );
+        this.particles.spawn((this.player.x + 0.5) * this.tileSize, (this.player.y + 0.5) * this.tileSize, '#ffe600', 25, 4, 4.5);
 
         if (this.lives > 0) {
           this.resetPlayerPosition();
           this.resetGhostPositions();
-          this.showAnnouncement(`💔 CAUGHT! LIVES LEFT: ${this.lives}`);
+          this.showToast(`💔 CAUGHT! ${this.lives} LIVES REMAIN`);
         } else {
-          // Game Over
           this.state = 'GAMEOVER';
+          this.sound.playGameOver();
           this.ui.gameoverScore.textContent = this.score;
           this.ui.gameoverPellets.textContent = this.remainingPellets;
-          this.ui.gameoverReason.textContent = 'A shifting phantom intercepted you.';
           this.ui.modalGameOver.classList.add('active');
-          this.ui.statusPill.textContent = 'GAME OVER';
-          this.ui.statusPill.className = 'status-warning';
         }
         this.updateHUD();
       }
@@ -1717,8 +2092,6 @@
         this.ui.winScore.textContent = this.score;
         this.ui.winShifts.textContent = this.shiftsSurvived;
         this.ui.modalWin.classList.add('active');
-        this.ui.statusPill.textContent = 'VICTORY!';
-        this.ui.statusPill.className = 'status-playing';
       }
 
       updateHUD() {
@@ -1726,78 +2099,65 @@
         this.ui.highScore.textContent = this.highScore;
         this.ui.pellets.textContent = `${this.remainingPellets} / ${this.totalPellets}`;
 
-        // Shift Countdown Display
         const timeLeft = Math.max(0, this.shiftTimer).toFixed(1);
         this.ui.shiftTimer.textContent = `${timeLeft}s`;
         this.ui.shiftTimer.classList.toggle('warning', this.shiftTimer <= 3.0);
 
-        // Shift Progress Bar Fill
         const pct = Math.max(0, Math.min(1, this.shiftTimer / this.shiftInterval)) * 100;
         this.ui.shiftBar.style.width = `${pct}%`;
         this.ui.shiftBar.classList.toggle('warning', this.shiftTimer <= 3.0);
 
-        // Layout Title
-        this.ui.layoutBadge.textContent = LAYOUT_NAMES[this.currentLayout];
-
-        // Lives Icons
         let hearts = '';
         for (let i = 0; i < this.lives; i++) hearts += '🟡';
         this.ui.lives.textContent = hearts || '💀';
       }
 
-      // --- Canvas Rendering Pipeline ---
+      // --- Canvas Rendering ---
       render() {
         const ctx = this.ctx;
         ctx.clearRect(0, 0, this.width, this.height);
 
-        // 1. Draw Grid Background
+        const theme = LAYOUT_META[this.currentLayout];
+
         this.drawBackground(ctx);
-
-        // 2. Draw Dynamic Shifting Gates & Permanent Walls
-        this.drawMazeWalls(ctx);
-
-        // 3. Draw Pellets
-        this.drawPellets(ctx);
-
-        // 4. Draw Particles
+        this.drawMazeWalls(ctx, theme);
+        this.drawPellets(ctx, theme);
         this.particles.draw(ctx);
 
-        // 5. Draw Ghosts
-        if (this.enemiesEnabled && this.state !== 'START') {
+        if (this.state !== 'START') {
           this.drawGhosts(ctx);
         }
 
-        // 6. Draw Player
         if (this.state !== 'START' && this.lives > 0) {
           this.drawPlayer(ctx);
         }
 
-        // 7. Draw Shift Shockwave Overlay
         if (this.shiftShockwave > 0) {
           ctx.save();
-          ctx.strokeStyle = `rgba(0, 229, 255, ${this.shiftShockwave * 0.8})`;
-          ctx.lineWidth = 6 * this.shiftShockwave;
+          ctx.strokeStyle = theme.wallGlow;
+          ctx.globalAlpha = this.shiftShockwave * 0.85;
+          ctx.lineWidth = 8 * this.shiftShockwave;
           ctx.strokeRect(0, 0, this.width, this.height);
           ctx.restore();
         }
       }
 
       drawBackground(ctx) {
-        ctx.fillStyle = '#03050c';
+        ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--theme-bg').trim() || '#03050e';
         ctx.fillRect(0, 0, this.width, this.height);
 
-        // Subtle corridor floor pattern
+        const ts = this.tileSize;
         ctx.fillStyle = 'rgba(255, 255, 255, 0.015)';
         for (let r = 0; r < this.gridRows; r++) {
           for (let c = 0; c < this.gridCols; c++) {
             if (!this.isWall(c, r)) {
-              ctx.fillRect(c * this.tileSize + 2, r * this.tileSize + 2, this.tileSize - 4, this.tileSize - 4);
+              ctx.fillRect(c * ts + 2, r * ts + 2, ts - 4, ts - 4);
             }
           }
         }
       }
 
-      drawMazeWalls(ctx) {
+      drawMazeWalls(ctx, theme) {
         const ts = this.tileSize;
         const nextLayout = (this.currentLayout % 3) + 1;
         const isImminent = this.shiftTimer <= 3.0;
@@ -1805,61 +2165,52 @@
         for (let r = 0; r < this.gridRows; r++) {
           for (let c = 0; c < this.gridCols; c++) {
             const ch = MASTER_GRID[r][c];
-            const isSolidWall = this.isWall(c, r, this.currentLayout);
-
+            const isSolid = this.isWall(c, r, this.currentLayout);
             const x = c * ts;
             const y = r * ts;
 
-            // Permanent Wall Rendering
             if (ch === '#') {
-              ctx.fillStyle = '#081230';
+              ctx.fillStyle = theme.wallBase;
               ctx.fillRect(x, y, ts, ts);
 
-              ctx.strokeStyle = '#0055ff';
-              ctx.lineWidth = 2.5;
+              ctx.strokeStyle = theme.wallStroke;
+              ctx.lineWidth = 2.2;
               ctx.strokeRect(x + 1, y + 1, ts - 2, ts - 2);
 
-              // Inner neon edge
-              ctx.strokeStyle = 'rgba(0, 229, 255, 0.4)';
+              ctx.strokeStyle = theme.wallGlow;
               ctx.lineWidth = 1;
-              ctx.strokeRect(x + 3, y + 3, ts - 6, ts - 6);
-            }
-            // Shifting Gate Wall (currently closed)
-            else if (isSolidWall) {
-              ctx.fillStyle = '#2b101e';
+              ctx.globalAlpha = 0.4;
+              ctx.strokeRect(x + 3.5, y + 3.5, ts - 7, ts - 7);
+              ctx.globalAlpha = 1.0;
+            } else if (isSolid) {
+              ctx.fillStyle = '#220815';
               ctx.fillRect(x, y, ts, ts);
 
-              // Shifting neon barrier
-              ctx.strokeStyle = '#ff2a55';
-              ctx.lineWidth = 2.5;
+              ctx.strokeStyle = '#ef4444';
+              ctx.lineWidth = 2.2;
               ctx.strokeRect(x + 1, y + 1, ts - 2, ts - 2);
 
-              // Cross-hatch indicator
               ctx.beginPath();
-              ctx.moveTo(x + 3, y + 3);
-              ctx.lineTo(x + ts - 3, y + ts - 3);
-              ctx.moveTo(x + ts - 3, y + 3);
-              ctx.lineTo(x + 3, y + ts - 3);
-              ctx.strokeStyle = 'rgba(255, 42, 85, 0.6)';
-              ctx.lineWidth = 1.5;
+              ctx.moveTo(x + 4, y + 4);
+              ctx.lineTo(x + ts - 4, y + ts - 4);
+              ctx.moveTo(x + ts - 4, y + 4);
+              ctx.lineTo(x + 4, y + ts - 4);
+              ctx.strokeStyle = 'rgba(239, 68, 68, 0.7)';
+              ctx.lineWidth = 1.6;
               ctx.stroke();
-            }
-            // Gate currently OPEN, but about to close in upcoming layout!
-            else if (ch === `${nextLayout}`) {
+            } else if (ch === `${nextLayout}`) {
               ctx.save();
               if (isImminent) {
-                // Pulsing warning indicator on tiles about to close!
                 const pulse = Math.sin(performance.now() * 0.015) * 0.5 + 0.5;
-                ctx.fillStyle = `rgba(255, 170, 0, ${0.15 + pulse * 0.25})`;
+                ctx.fillStyle = `rgba(245, 158, 11, ${0.15 + pulse * 0.3})`;
                 ctx.fillRect(x + 2, y + 2, ts - 4, ts - 4);
 
-                ctx.strokeStyle = `rgba(255, 80, 0, ${0.5 + pulse * 0.5})`;
+                ctx.strokeStyle = `rgba(239, 68, 68, ${0.6 + pulse * 0.4})`;
                 ctx.lineWidth = 2;
                 ctx.setLineDash([4, 4]);
                 ctx.strokeRect(x + 3, y + 3, ts - 6, ts - 6);
               } else {
-                // Faint dynamic gate marker
-                ctx.strokeStyle = 'rgba(0, 229, 255, 0.25)';
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
                 ctx.lineWidth = 1;
                 ctx.setLineDash([3, 3]);
                 ctx.strokeRect(x + 3, y + 3, ts - 6, ts - 6);
@@ -1870,7 +2221,7 @@
         }
       }
 
-      drawPellets(ctx) {
+      drawPellets(ctx, theme) {
         const ts = this.tileSize;
         const now = performance.now() * 0.005;
 
@@ -1883,19 +2234,17 @@
             const cy = (r + 0.5) * ts;
 
             if (type === 1) {
-              // Regular Golden Pellet
-              ctx.fillStyle = '#ffd700';
-              ctx.shadowColor = '#ffd700';
-              ctx.shadowBlur = 6;
+              ctx.fillStyle = theme.pelletColor;
+              ctx.shadowColor = theme.pelletColor;
+              ctx.shadowBlur = 5;
               ctx.beginPath();
               ctx.arc(cx, cy, 3, 0, Math.PI * 2);
               ctx.fill();
               ctx.shadowBlur = 0;
             } else if (type === 2) {
-              // Power Pellet (glowing & pulsing)
-              const pulse = Math.sin(now) * 1.5 + 6.5;
-              ctx.fillStyle = '#00ffff';
-              ctx.shadowColor = '#00ffff';
+              const pulse = Math.sin(now) * 1.6 + 7.0;
+              ctx.fillStyle = theme.powerColor;
+              ctx.shadowColor = theme.powerColor;
               ctx.shadowBlur = 12;
               ctx.beginPath();
               ctx.arc(cx, cy, pulse, 0, Math.PI * 2);
@@ -1920,7 +2269,6 @@
         ctx.save();
         ctx.translate(cx, cy);
 
-        // Determine orientation angle based on movement direction
         let angle = 0;
         if (this.player.dirX === 1) angle = 0;
         else if (this.player.dirX === -1) angle = Math.PI;
@@ -1928,12 +2276,9 @@
         else if (this.player.dirY === -1) angle = Math.PI * 1.5;
 
         ctx.rotate(angle);
-
-        // Outer glow
         ctx.shadowColor = '#ffe600';
         ctx.shadowBlur = 10;
 
-        // Draw Pac-man body with chomping mouth
         const mouth = this.player.mouthAngle * Math.PI;
         ctx.fillStyle = '#ffe600';
         ctx.beginPath();
@@ -1944,10 +2289,9 @@
 
         ctx.shadowBlur = 0;
 
-        // Cute eye
-        ctx.fillStyle = '#040714';
+        ctx.fillStyle = '#060914';
         ctx.beginPath();
-        ctx.arc(radius * 0.2, -radius * 0.52, 2.2, 0, Math.PI * 2);
+        ctx.arc(radius * 0.22, -radius * 0.52, 2.2, 0, Math.PI * 2);
         ctx.fill();
 
         ctx.restore();
@@ -1967,11 +2311,10 @@
           let bodyColor = ghost.color;
           if (ghost.state === 'FRIGHTENED') {
             const flash = this.frightenedTimer < 2.0 && Math.floor(performance.now() / 150) % 2 === 0;
-            bodyColor = flash ? '#ffffff' : '#2b55ff';
+            bodyColor = flash ? '#ffffff' : '#2563eb';
           }
 
           if (ghost.state !== 'RETURNING') {
-            // Ghost body with arcade dome and wavy skirt
             ctx.fillStyle = bodyColor;
             ctx.shadowColor = bodyColor;
             ctx.shadowBlur = 8;
@@ -1980,7 +2323,6 @@
             ctx.arc(0, -r * 0.2, r, Math.PI, 0, false);
             ctx.lineTo(r, r * 0.85);
 
-            // Wavy tentacle skirt
             const steps = 3;
             const stepW = (r * 2) / steps;
             for (let i = 0; i < steps; i++) {
@@ -2001,82 +2343,22 @@
 
           ctx.fillStyle = '#ffffff';
           ctx.beginPath();
-          ctx.arc(-r * 0.38 + eyeOffsetX, -r * 0.2 + eyeOffsetY, r * 0.28, 0, Math.PI * 2);
-          ctx.arc(r * 0.38 + eyeOffsetX, -r * 0.2 + eyeOffsetY, r * 0.28, 0, Math.PI * 2);
+          ctx.arc(-r * 0.38 + eyeOffsetX, -r * 0.2 + eyeOffsetY, r * 0.26, 0, Math.PI * 2);
+          ctx.arc(r * 0.38 + eyeOffsetX, -r * 0.2 + eyeOffsetY, r * 0.26, 0, Math.PI * 2);
           ctx.fill();
 
-          // Pupils
-          ctx.fillStyle = ghost.state === 'FRIGHTENED' ? '#ff9900' : '#001a66';
+          ctx.fillStyle = ghost.state === 'FRIGHTENED' ? '#f59e0b' : '#020617';
           ctx.beginPath();
-          ctx.arc(-r * 0.38 + eyeOffsetX * 1.5, -r * 0.2 + eyeOffsetY * 1.5, r * 0.14, 0, Math.PI * 2);
-          ctx.arc(r * 0.38 + eyeOffsetX * 1.5, -r * 0.2 + eyeOffsetY * 1.5, r * 0.14, 0, Math.PI * 2);
+          ctx.arc(-r * 0.38 + eyeOffsetX * 1.5, -r * 0.2 + eyeOffsetY * 1.5, r * 0.13, 0, Math.PI * 2);
+          ctx.arc(r * 0.38 + eyeOffsetX * 1.5, -r * 0.2 + eyeOffsetY * 1.5, r * 0.13, 0, Math.PI * 2);
           ctx.fill();
 
           ctx.restore();
         }
       }
-
-      // --- Internal Diagnostic Test Suite ---
-      runSelfDiagnostics() {
-        console.group('[MazeShift Diagnostics] Running Invariant Verifications...');
-
-        // Invariant 1: Grid Dimension Verification
-        const rowsOk = MASTER_GRID.length === 21;
-        const colsOk = MASTER_GRID.every(r => r.length === 21);
-        console.assert(rowsOk && colsOk, 'Invariant 1 Failed: Grid dimensions must be 21x21');
-
-        // Invariant 2: Connectivity verification across all 3 layouts
-        for (let layoutId = 1; layoutId <= 3; layoutId++) {
-          const walkable = new Set();
-          for (let r = 0; r < 21; r++) {
-            for (let c = 0; c < 21; c++) {
-              if (!this.isWall(c, r, layoutId)) {
-                walkable.add(`${c},${r}`);
-              }
-            }
-          }
-
-          // BFS from player spawn (10, 17)
-          const visited = new Set();
-          const queue = ['10,17'];
-          visited.add('10,17');
-          while (queue.length > 0) {
-            const [sc, sr] = queue.shift().split(',').map(Number);
-            const neighbors = [
-              [sc, sr - 1], [sc, sr + 1], [sc - 1, sr], [sc + 1, sr]
-            ];
-            for (const [nc, nr] of neighbors) {
-              const key = `${nc},${nr}`;
-              if (walkable.has(key) && !visited.has(key)) {
-                visited.add(key);
-                queue.push(key);
-              }
-            }
-          }
-          const connected = walkable.size === visited.size;
-          console.assert(connected, `Invariant 2 Failed: Layout ${layoutId} must be 100% connected`);
-        }
-
-        // Invariant 3: Zero pellets placed on shifting gate cells
-        let gatePelletViolation = false;
-        for (let r = 0; r < 21; r++) {
-          for (let c = 0; c < 21; c++) {
-            const ch = MASTER_GRID[r][c];
-            if (['1', '2', '3'].includes(ch)) {
-              if (this.pellets[r][c] !== 0) {
-                gatePelletViolation = true;
-              }
-            }
-          }
-        }
-        console.assert(!gatePelletViolation, 'Invariant 3 Failed: Shifting gates must never contain pellets');
-
-        console.log('✅ All 3 layouts mathematically verified: 100% connected, no trapped pockets, no pellets on shifting walls.');
-        console.groupEnd();
-      }
     }
 
-    // Launch Game upon DOM ready
+    // Launch game on DOM ready
     window.addEventListener('DOMContentLoaded', () => {
       window.game = new MazeShiftGame();
     });
