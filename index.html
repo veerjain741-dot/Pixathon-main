@@ -8,9 +8,9 @@
     /* --- Dynamic Arcade Theme Variables --- */
     :root {
       --bg-dark: #04060d;
-      --bg-surface: rgba(11, 15, 28, 0.88);
-      --bg-surface-border: rgba(255, 255, 255, 0.09);
-      --text-main: #f1f5f9;
+      --bg-surface: rgba(11, 15, 28, 0.9);
+      --bg-surface-border: rgba(255, 255, 255, 0.1);
+      --text-main: #f8fafc;
       --text-sub: #94a3b8;
       --text-accent: #00e5ff;
 
@@ -23,11 +23,12 @@
       --theme-pellet: #ffd700;
       --theme-power: #00ffff;
       --theme-gate: #00ffff;
+      --theme-glow-rgb: 0, 229, 255;
 
       --arcade-gold: #fbbf24;
       --arcade-danger: #ef4444;
       --arcade-emerald: #10b981;
-      --font-ui: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-ui: "Rajdhani", "Chakra Petch", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
     }
 
     /* Layout Theme 1: Cobalt Highways */
@@ -40,6 +41,7 @@
       --theme-pellet: #ffd700;
       --theme-power: #00ffff;
       --theme-gate: #00ffff;
+      --theme-glow-rgb: 0, 229, 255;
     }
 
     /* Layout Theme 2: Emerald Serpent */
@@ -52,6 +54,7 @@
       --theme-pellet: #facc15;
       --theme-power: #34d399;
       --theme-gate: #34d399;
+      --theme-glow-rgb: 16, 185, 129;
     }
 
     /* Layout Theme 3: Sunset Citadel */
@@ -64,6 +67,7 @@
       --theme-pellet: #fb923c;
       --theme-power: #f43f5e;
       --theme-gate: #fb7185;
+      --theme-glow-rgb: 244, 63, 94;
     }
 
     * {
@@ -86,8 +90,14 @@
       justify-content: flex-start;
       transition: background-color 0.5s ease;
       background-image: 
-        radial-gradient(circle at 50% 30%, rgba(0, 229, 255, 0.05) 0%, transparent 60%),
-        radial-gradient(circle at 10% 90%, rgba(244, 63, 94, 0.04) 0%, transparent 40%);
+        /* Subtle arcade cyber-grid pattern */
+        linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+        /* Atmospheric arcade glow that morphs with the layout themes */
+        radial-gradient(circle at 50% 25%, rgba(var(--theme-glow-rgb, 0, 229, 255), 0.08) 0%, transparent 65%),
+        radial-gradient(circle at 15% 85%, rgba(var(--theme-glow-rgb, 0, 229, 255), 0.04) 0%, transparent 45%),
+        radial-gradient(circle at 85% 85%, rgba(var(--theme-glow-rgb, 0, 229, 255), 0.04) 0%, transparent 45%);
+      background-size: 32px 32px, 32px 32px, 100% 100%, 100% 100%, 100% 100%;
     }
 
     /* --- Compact Single-Line Top Bar (Never wraps, fits in 1 neat line) --- */
@@ -302,79 +312,82 @@
 
     /* Sidebar Cards */
     .side-intel-card {
-      width: 230px;
-      max-height: calc(100vh - 72px);
+      width: 250px;
+      max-height: calc(100vh - 68px);
       background: var(--bg-surface);
-      backdrop-filter: blur(10px);
-      border: 1px solid var(--bg-card-border);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--bg-surface-border);
       border-radius: 14px;
-      padding: 14px;
+      padding: 16px 18px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      gap: 14px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
       flex-shrink: 0;
       overflow-y: auto;
     }
 
-    @media (max-width: 1040px) {
+    @media (max-width: 1060px) {
       .side-intel-card { display: none; }
     }
 
     .intel-section {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 7px;
     }
 
     .intel-header {
-      font-size: 0.72rem;
-      font-weight: 900;
-      letter-spacing: 1px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 1.2px;
       color: var(--theme-accent);
       text-transform: uppercase;
       display: flex;
       align-items: center;
-      gap: 6px;
-      padding-bottom: 4px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      gap: 7px;
+      padding-bottom: 5px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     .intel-row {
-      font-size: 0.74rem;
-      color: #cbd5e1;
-      line-height: 1.4;
+      font-size: 0.82rem;
+      color: #e2e8f0;
+      line-height: 1.5;
       display: flex;
       align-items: flex-start;
-      gap: 6px;
+      gap: 7px;
     }
 
     .intel-bullet {
       color: var(--theme-accent);
-      font-size: 0.8rem;
-      line-height: 1.2;
+      font-size: 0.85rem;
+      line-height: 1.3;
+      font-weight: 900;
     }
 
     .key-tag {
-      background: rgba(255, 255, 255, 0.12);
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.25);
       border-radius: 4px;
-      padding: 1px 5px;
-      font-size: 0.65rem;
+      padding: 2px 6px;
+      font-size: 0.72rem;
       font-weight: 800;
       color: #fff;
+      box-shadow: 0 2px 0 rgba(0, 0, 0, 0.4);
     }
 
     .badge-status {
       display: inline-block;
-      padding: 2px 8px;
-      border-radius: 10px;
-      font-size: 0.68rem;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 0.75rem;
       font-weight: 800;
-      background: rgba(0, 229, 255, 0.12);
+      letter-spacing: 0.5px;
+      background: rgba(0, 229, 255, 0.15);
       color: var(--theme-accent);
       border: 1px solid var(--theme-accent);
-      margin-top: 2px;
+      margin-top: 3px;
     }
 
     /* --- Center Game Board --- */
@@ -1123,36 +1136,36 @@
     const DIFFICULTY_PRESETS = {
       EASY: {
         name: 'EASY',
-        ghost1Speed: 3.3, // Outrun by ~1.0 t/s
-        ghost2Speed: 3.1,
+        ghost1Speed: 2.9, // Very relaxed speed (player advantage +1.4 t/s)
+        ghost2Speed: 2.7,
         ghost1Color: '#ff6b8b', // Coral
         ghost2Color: '#00f5b8', // Mint
         aiMode: 'DIRECT_ONLY',
         pelletDensity: 'LOW',
         aiDesc: 'Both ghosts chase directly',
-        speedDesc: 'Ghost Speed: 3.3 t/s (Casual)'
+        speedDesc: 'Ghost Speed: 2.9 t/s (Gentle)'
       },
       MEDIUM: {
         name: 'MEDIUM',
-        ghost1Speed: 3.7, // Outrun by ~0.6 t/s
-        ghost2Speed: 3.5,
+        ghost1Speed: 3.25, // Reduced from 3.7 (player advantage +1.05 t/s, easy & fun to win!)
+        ghost2Speed: 3.05, // Reduced from 3.5
         ghost1Color: '#ff2a55', // Crimson
         ghost2Color: '#00e5ff', // Sky Cyan
         aiMode: 'PREDICTIVE_PINKY',
         pelletDensity: 'MEDIUM',
         aiDesc: '1 Chaser + 1 Flanker',
-        speedDesc: 'Ghost Speed: 3.7 t/s (Balanced)'
+        speedDesc: 'Ghost Speed: 3.25 t/s (Moderate)'
       },
       HARD: {
         name: 'HARD',
-        ghost1Speed: 4.0, // Outrun by ~0.3 t/s
-        ghost2Speed: 3.9,
+        ghost1Speed: 3.95, // Close, thrilling chase
+        ghost2Speed: 3.85,
         ghost1Color: '#ff1100', // Blood Red
         ghost2Color: '#b5179e', // Shadow Violet
         aiMode: 'FULL_PREDICTIVE',
         pelletDensity: 'HIGH',
         aiDesc: 'Both ghosts predict & cut corners',
-        speedDesc: 'Ghost Speed: 4.0 t/s (High Pressure)'
+        speedDesc: 'Ghost Speed: 3.95 t/s (High Pressure)'
       }
     };
 
@@ -1367,9 +1380,9 @@
         // Fits 100% within the desktop viewport without ANY vertical scrolling!
         // Viewport height minus 48px header minus 24px vertical padding = available height
         const availableHeight = window.innerHeight - 72;
-        const hasSidebars = window.innerWidth >= 1040;
-        // On wide screen, reserve width for the 2 sidebars (2 * 230px + gaps)
-        const availableWidth = hasSidebars ? window.innerWidth - 500 : window.innerWidth - 32;
+        const hasSidebars = window.innerWidth >= 1060;
+        // On wide screen, reserve width for the 2 sidebars (2 * 250px + gaps)
+        const availableWidth = hasSidebars ? window.innerWidth - 540 : window.innerWidth - 32;
 
         const maxIdeal = 672;
         const size = Math.min(availableHeight, availableWidth, maxIdeal);
